@@ -20,18 +20,16 @@
 @endif
 
     <p class="lead text-light">{{ $event->description }}</p>
+<form action="{{ route('client.reservation.store') }}" method="POST">
+    @csrf
+    <input type="hidden" name="event_id" value="{{ $event->id }}">
+    <input type="hidden" name="price" value="{{ $event->ticket_price }}">
 
-    <h4 class="text-light mt-4">Acheter un billet</h4>
-    <form action="{{ route('events.reserve', $event->id) }}" method="POST">
-        @csrf
-        <div class="mb-3">
-            <label class="form-label text-light">Mode de paiement</label>
-            <select name="payment_method" class="form-select" required>
-                <option value="mobile_money">Mobile Money (Mvola, Orange, Airtel)</option>
-                <option value="cash">Cash</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Acheter un billet</button>
-    </form>
+    <p>Billet simple pour l’événement libre.</p>
+
+    @include('components.payment_fields')
+
+    <button type="submit" class="btn btn-primary mt-3">Réserver</button>
+</form>
 </div>
 @endsection

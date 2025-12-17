@@ -9,6 +9,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\SeatReservationController;
 use App\Http\Controllers\HallController;
+use App\Http\Controllers\ReservationController;
 
 
 //use App\Http\Middleware\IsAdmin;
@@ -31,6 +32,7 @@ Route::get('/events/libre', [EventController::class, 'libre'])->name('events.lib
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
 Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
 Route::post('/events/{id}/reserve', [EventController::class, 'reserve'])->middleware('auth')->name('events.reserve');
+
 
 // Cinéma
 Route::get('/showtimes/{id}', [ShowtimeController::class, 'show'])->name('showtimes.show');
@@ -58,6 +60,13 @@ Route::get('/halls/{id}', [HallController::class, 'show'])->name('halls.show');
 // Organisateurs
 Route::get('/organizers', [OrganizerController::class, 'index'])->name('organizers.index');
 Route::get('/organizers/{id}', [OrganizerController::class, 'show'])->name('organizers.show');
+
+
+// Réservations (côté client)
+Route::middleware(['auth'])->prefix('client')->group(function () {
+    Route::post('/reservation', [ReservationController::class, 'store'])->name('client.reservation.store');
+});
+
 
 // Réservations de sièges
 Route::get('/reservations', [SeatReservationController::class, 'index'])->middleware('auth')->name('reservations.index');
