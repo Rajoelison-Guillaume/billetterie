@@ -19,4 +19,8 @@ class Payment extends Model
     {
         return $this->belongsTo(Order::class);
     }
+     /** Relation : un paiement appartient à un utilisateur (via la commande) */ 
+     public function user(): BelongsTo { return $this->belongsTo(User::class); 
+    }
+
 }

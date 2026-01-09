@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Organizer extends Model
 {
-    protected $fillable = ['name','contact_email','contact_phone','description'];
+    protected $fillable = ['name','contact_email','contact_phone','description','logo'];
 
     public function events(): HasMany
     {

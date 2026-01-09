@@ -7,26 +7,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SeatReservation extends Model
 {
-    protected $fillable = [
-        'showtime_id',
-        'seat_id',
-        'ticket_id',
-        'reserved_at',
-    ];
+    protected $fillable = ['showtime_id','seat_id','ticket_id','user_id','reserved_at'];
 
-    
-    public function showtime(): BelongsTo
-    {
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+
+    public function showtime() {
         return $this->belongsTo(Showtime::class);
     }
 
-    public function seat(): BelongsTo
-    {
+    public function seat() {
         return $this->belongsTo(Seat::class);
     }
 
-    public function ticket(): BelongsTo
-    {
+    public function ticket() {
         return $this->belongsTo(Ticket::class);
     }
 }
+

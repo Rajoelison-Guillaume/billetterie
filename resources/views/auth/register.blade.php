@@ -18,10 +18,16 @@
                             <label for="name" class="form-label">Nom complet</label>
                             <input id="name" type="text" class="form-control" name="name" required autofocus>
                         </div>
+                        
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Numéro de téléphone</label>
+                            <input type="text" name="phone" id="phone" class="form-control" value="{{ old('phone') }}" required>
+                        </div>
+
 
                         <div class="mb-3">
                             <label for="email" class="form-label">Adresse email</label>
-                            <input id="email" type="email" class="form-control" name="email" required>
+                            <input id="email" type="email" class="form-control" na  me="email" required>
                         </div>
 
                         <div class="mb-3">

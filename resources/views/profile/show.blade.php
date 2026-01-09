@@ -22,6 +22,8 @@
     <div class="card bg-dark text-light shadow mb-4">
         <div class="card-body">
             <h5 class="card-title">{{ Auth::user()->name }}</h5>
+            <p><strong>Téléphone :</strong> {{ Auth::user()->phone }}</p>
+
             <p class="card-text"><strong>Email :</strong> {{ Auth::user()->email }}</p>
             <p class="card-text"><strong>Inscrit depuis :</strong> {{ Auth::user()->created_at->format('d/m/Y') }}</p>
             <a href="{{ route('profile.edit') }}" class="btn btn-primary mt-3">Modifier mes informations</a>

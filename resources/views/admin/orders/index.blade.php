@@ -22,30 +22,26 @@
 {{-- Formulaire de recherche avancée --}}
 <form method="GET" action="{{ route('admin.orders.index') }}" class="row g-3 mb-4">
     <div class="col-md-2">
-        <label class="form-label">ID</label>
-        <input type="text" name="id" value="{{ request('id') }}" class="form-control">
+        <input type="text" name="id" class="form-control" placeholder="ID commande" value="{{ request('id') }}">
     </div>
     <div class="col-md-2">
-        <label class="form-label">QR Code</label>
-        <input type="text" name="qr_code" value="{{ request('qr_code') }}" class="form-control">
-    </div>
-    <div class="col-md-3">
-        <label class="form-label">Événement</label>
-        <input type="text" name="event" value="{{ request('event') }}" class="form-control">
+        <input type="text" name="qr" class="form-control" placeholder="QR code" value="{{ request('qr') }}">
     </div>
     <div class="col-md-2">
-        <label class="form-label">Date</label>
-        <input type="date" name="date" value="{{ request('date') }}" class="form-control">
+        <input type="text" name="event" class="form-control" placeholder="Événement" value="{{ request('event') }}">
     </div>
-    <div class="col-md-3">
-        <label class="form-label">Lieu</label>
-        <input type="text" name="venue" value="{{ request('venue') }}" class="form-control">
+    <div class="col-md-2">
+        <input type="date" name="date" class="form-control" value="{{ request('date') }}">
     </div>
-    <div class="col-12">
-        <button type="submit" class="btn btn-info">🔍 Rechercher</button>
-        <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary">♻️ Réinitialiser</a>
+    <div class="col-md-2">
+        <input type="text" name="location" class="form-control" placeholder="Lieu" value="{{ request('location') }}">
+    </div>
+    <div class="col-md-2 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Rechercher</button>
+        <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary">Réinitialiser</a>
     </div>
 </form>
+
 
 {{-- Tableau des commandes --}}
 <table class="table table-dark table-striped align-middle">

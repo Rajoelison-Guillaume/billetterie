@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -7,24 +8,42 @@ use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
+    /**
+     * Liste des paiements avec supervision.
+     */
     public function index()
     {
-        $payments = Payment::latest()->paginate(20);
+        // Charger les paiements avec la commande et l’utilisateur
+        $payments = Payment::with(['order.user', 'order.tickets.seat', 'order.tickets.event'])
+            ->latest()
+            ->paginate(20);
+
         return view('admin.payments.index', compact('payments'));
     }
 
+    /**
+     * Détail d’un paiement spécifique.
+     */
     public function show($id)
     {
-        $payment = Payment::findOrFail($id);
+        $payment = Payment::with(['order.user', 'order.tickets.seat', 'order.tickets.event'])
+            ->findOrFail($id);
+
         return view('admin.payments.show', compact('payment'));
     }
 
-    public function validateCash($id)
+    /**
+     * Supervision : marquer un paiement comme échoué (audit).
+     */
+    public function markAsFailed($id)
     {
         $payment = Payment::findOrFail($id);
-        if ($payment->method === 'cash' && $payment->status === 'pending') {
-            $payment->update(['status' => 'paid']);
+
+        if ($payment->status !== 'failed') {
+            $payment->update(['status' => 'failed']);
         }
-        return redirect()->route('admin.payments.index')->with('success', 'Paiement cash validé.');
+
+        return redirect()->route('admin.payments.index')
+            ->with('error', 'Paiement marqué comme échoué par l’admin.');
     }
 }

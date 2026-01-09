@@ -7,12 +7,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\Order; 
+use App\Models\Order;
+use App\Models\Ticket;
+use App\Models\Payment;
+
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+    /** * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Order[] $orders */
     public function tickets(): HasMany
     {
     return $this->hasMany(Ticket::class);
@@ -36,8 +40,9 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'phone',
         'email',
-        'password',
+        'password'
     ];
 
     /**

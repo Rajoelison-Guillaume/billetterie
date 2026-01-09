@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Venue extends Model
 {
-    protected $fillable = ['name','address','city','description'];
+    protected $fillable = ['name','address','city','type','capacity','description'];
 
     public function rooms()
     {

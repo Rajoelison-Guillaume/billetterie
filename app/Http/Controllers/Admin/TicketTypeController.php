@@ -14,14 +14,17 @@ class TicketTypeController extends Controller
     }
 
     public function create() {
-        return view('admin.ticket-types.create');
+    $events = Event::all();
+    return view('admin.ticket-types.create', compact('events'));
     }
+
 
     public function store(Request $request) {
         $validated = $request->validate([
             'name' => 'required|string',
             'price' => 'required|numeric',
             'quantity' => 'required|integer',
+            'event_id' => 'required|exists:events,id',
         ]);
         TicketType::create($validated);
         return redirect()->route('admin.ticket-types.index')->with('success','Type de billet ajouté');
@@ -34,7 +37,8 @@ class TicketTypeController extends Controller
 
     public function edit($id) {
         $ticketType = TicketType::findOrFail($id);
-        return view('admin.ticket-types.edit', compact('ticketType'));
+        $events = Event::all();
+        return view('admin.ticket-types.edit', compact('ticketType','events'));
     }
 
     public function update(Request $request, $id) {
@@ -43,6 +47,7 @@ class TicketTypeController extends Controller
             'name' => 'required|string',
             'price' => 'required|numeric',
             'quantity' => 'required|integer',
+            'event_id' => 'required|exists:events,id',
         ]);
         $ticketType->update($validated);
         return redirect()->route('admin.ticket-types.index')->with('success','Type de billet mis à jour');

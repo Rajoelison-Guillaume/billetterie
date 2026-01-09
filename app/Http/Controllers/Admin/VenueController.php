@@ -21,7 +21,8 @@ class VenueController extends Controller
             'name' => 'required|string',
             'address' => 'nullable|string',
             'capacity' => 'required|integer',
-            'type' => 'required|in:hall,cinema',
+            'type' => 'required|in:hall,cinema,plein_air,stade,theatre',
+
         ]);
         Venue::create($validated);
         return redirect()->route('admin.venues.index')->with('success','Salle ajoutée');
@@ -43,7 +44,8 @@ class VenueController extends Controller
             'name' => 'required|string',
             'address' => 'nullable|string',
             'capacity' => 'required|integer',
-            'type' => 'required|in:hall,cinema',
+            'type' => 'required|in:hall,cinema,plein_air,stade,theatre',
+
         ]);
         $venue->update($validated);
         return redirect()->route('admin.venues.index')->with('success','Salle mise à jour');

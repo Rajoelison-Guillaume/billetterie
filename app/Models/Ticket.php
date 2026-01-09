@@ -26,6 +26,10 @@ class Ticket extends Model
     {
         return $this->belongsTo(Order::class);
     }
+     /** Relation : un ticket appartient à un utilisateur (via la commande) */ 
+     public function user(): BelongsTo { 
+        return $this->belongsTo(User::class); 
+    }
 
     public function event(): BelongsTo
     {

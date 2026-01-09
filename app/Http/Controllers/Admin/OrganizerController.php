@@ -17,14 +17,20 @@ class OrganizerController extends Controller
 
     public function store(Request $request) {
         $validated = $request->validate([
-            'name' => 'required|string',
-            'description' => 'nullable|string',
-            'logo' => 'nullable|image|max:2048',
-        ]);
-        if ($request->hasFile('logo')) {
-            $validated['logo'] = $request->file('logo')->store('logos', 'public');
-        }
-        Organizer::create($validated);
+        'name' => 'required|string|max:150',
+        'contact_email' => 'nullable|email',
+        'contact_phone' => 'nullable|string|max:30',
+        'description' => 'nullable|string',
+        'logo' => 'nullable|image|max:2048',
+    ]);
+
+    if ($request->hasFile('logo')) {
+        $path = $request->file('logo')->store('logos', 'public');
+        $validated['logo'] = $path;
+    }
+
+    Organizer::create($validated);
+
         return redirect()->route('admin.organizers.index')->with('success','Organisateur ajouté');
     }
 
@@ -41,14 +47,20 @@ class OrganizerController extends Controller
     public function update(Request $request, $id) {
         $organizer = Organizer::findOrFail($id);
         $validated = $request->validate([
-            'name' => 'required|string',
+            'name' => 'required|string|max:150',
+            'contact_email' => 'nullable|email',
+            'contact_phone' => 'nullable|string|max:30',
             'description' => 'nullable|string',
             'logo' => 'nullable|image|max:2048',
         ]);
+
         if ($request->hasFile('logo')) {
-            $validated['logo'] = $request->file('logo')->store('logos', 'public');
-        }
-        $organizer->update($validated);
+    $path = $request->file('logo')->store('logos', 'public');
+    $validated['logo'] = $path; 
+}
+
+$organizer->update($validated);
+
         return redirect()->route('admin.organizers.index')->with('success','Organisateur mis à jour');
     }
 

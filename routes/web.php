@@ -10,6 +10,8 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\SeatReservationController;
 use App\Http\Controllers\HallController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\WebhookController;
+
 
 
 //use App\Http\Middleware\IsAdmin;
@@ -103,8 +105,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(
     Route::resource('payments', AdminPaymentController::class)
     ->only(['index','show']);
 
+Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
+    Route::resource('payments', \App\Http\Controllers\Admin\PaymentController::class)->only(['index', 'show']);
+    Route::put('payments/{id}/failed', [\App\Http\Controllers\Admin\PaymentController::class, 'markAsFailed'])
+        ->name('admin.payments.failed');
+    Route::post('/orders/{order}/pay', [AdminOrderController::class, 'pay'])->name('orders.pay');
 
 });
 
+Route::post('/webhook', [WebhookController::class, 'handle']);
 
+});
 require __DIR__.'/auth.php';
