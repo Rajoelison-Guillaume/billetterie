@@ -34,7 +34,10 @@ class Event extends Model
     public function room()          { return $this->belongsTo(Room::class); }
     public function eventType()     { return $this->belongsTo(EventType::class); }
     public function showtimes()     { return $this->hasMany(Showtime::class); }
-
+    public function tickets() 
+    { 
+        return $this->hasMany(Ticket::class); 
+    }
     public function isCinema(): bool
     {
         return $this->category === 'cinema';

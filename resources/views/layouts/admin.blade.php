@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Ton CSS global -->
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
     <style>
         body { background-color:#0f172a; color:#e2e8f0; }
         .navbar, .footer { background-color:#1e3a8a; }
@@ -50,5 +53,7 @@
     <p>&copy; {{ date('Y') }} Billetterie Madagascar — Interface Admin</p>
 </footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @yield('scripts')
 </body>
 </html>

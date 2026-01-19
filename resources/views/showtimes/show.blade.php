@@ -3,46 +3,46 @@
 @section('content')
 <div class="container py-4">
     <h2 class="text-primary fw-bold mb-4">
-        🎬 Séance : {{ $showtime->event->title }} — {{ $showtime->start_at->format('d/m/Y H:i') }}
+        🎟 Réservation pour {{ $showtime->event->title }}
     </h2>
-@if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
 
-@if($errors->any())
-    <div class="alert alert-danger">
-        <ul class="mb-0">
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
+    <p><strong>Date :</strong> {{ $showtime->start_at->format('d/m/Y H:i') }}</p>
     <p><strong>Salle :</strong> {{ $showtime->room->name }}</p>
-    <p><strong>Prix par billet :</strong> {{ number_format($showtime->price, 0, ',', ' ') }} Ar</p>
+    <p><strong>Prix du billet :</strong> {{ number_format($showtime->event->ticket_price, 0, ',', ' ') }} Ar</p>
 
+    {{-- Affichage des sièges --}}
     <h4 class="text-light mt-4">🪑 Choisissez vos places</h4>
-    <form action="{{ route('reservations.reserve', $showtime->id) }}" method="POST">
-    @csrf
-        <input type="hidden" name="payment_method" value="mobile_money">
-            <div class="row">
-                @foreach($seats as $seat)
+    <form action="{{ route('showtimes.reserve', $showtime->id) }}" method="POST">
+        @csrf
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            @foreach($seats as $seat)
                 @php
-                $isReserved = in_array($seat->id, $occupiedSeatIds);
+                    $isOccupied = in_array($seat->id, $occupiedSeatIds);
                 @endphp
-            <div class="col-2 mb-3">
-                <label class="btn {{ $isReserved ? 'btn-secondary' : 'btn-outline-success' }}">
-                    <input type="checkbox" name="seat_id[]" value="{{ $seat->id }}" {{ $isReserved ? 'disabled' : '' }}>
+                <label class="btn {{ $isOccupied ? 'btn-danger disabled' : 'btn-success' }}">
+                    <input type="checkbox" name="seat_id[]" value="{{ $seat->id }}" 
+                           {{ $isOccupied ? 'disabled' : '' }} hidden>
                     {{ $seat->row_label }}{{ $seat->seat_number }}
                 </label>
-            </div>
-        @endforeach
-    </div>
-        <button type="submit" class="btn btn-primary mt-3">Réserver les places sélectionnées</button>
-    </form>
+            @endforeach
+        </div>
 
+        {{-- Paiement --}}
+        <div class="mb-3">
+            <label class="form-label text-light">Mode de paiement</label>
+            <select name="payment_method" class="form-select" required>
+                <option value="mobile_money">Mobile Money (Mvola, Orange, Airtel)</option>
+                <option value="cash">Cash</option>
+            </select>
+        </div>
+
+        {{-- Téléphone --}}
+        <div class="mb-3">
+            <label class="form-label text-light">Numéro de téléphone</label>
+            <input type="text" name="phone" class="form-control" placeholder="032xxxxxxx" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Réserver</button>
+    </form>
 </div>
 @endsection

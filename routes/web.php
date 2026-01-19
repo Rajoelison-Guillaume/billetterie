@@ -12,10 +12,6 @@ use App\Http\Controllers\HallController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\WebhookController;
 
-
-
-//use App\Http\Middleware\IsAdmin;
-
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
@@ -35,10 +31,12 @@ Route::get('/events', [EventController::class, 'index'])->name('events.index');
 Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
 Route::post('/events/{id}/reserve', [EventController::class, 'reserve'])->middleware('auth')->name('events.reserve');
 
-
 // Cinéma
 Route::get('/showtimes/{id}', [ShowtimeController::class, 'show'])->name('showtimes.show');
 Route::post('/showtimes/{id}/reserve', [ShowtimeController::class, 'reserve'])->middleware('auth')->name('showtimes.reserve');
+
+// Webhooks
+Route::post('/webhook/efaina', [WebhookController::class, 'handle'])->name('webhook.efaina');
 
 // Panier / Commandes (côté utilisateur)
 Route::middleware(['auth'])->group(function () {
@@ -63,12 +61,10 @@ Route::get('/halls/{id}', [HallController::class, 'show'])->name('halls.show');
 Route::get('/organizers', [OrganizerController::class, 'index'])->name('organizers.index');
 Route::get('/organizers/{id}', [OrganizerController::class, 'show'])->name('organizers.show');
 
-
 // Réservations (côté client)
 Route::middleware(['auth'])->prefix('client')->group(function () {
     Route::post('/reservation', [ReservationController::class, 'store'])->name('client.reservation.store');
 });
-
 
 // Réservations de sièges
 Route::get('/reservations', [SeatReservationController::class, 'index'])->middleware('auth')->name('reservations.index');
@@ -81,18 +77,16 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Dashboard
+// Dashboard utilisateur
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-
-
-
 
 // Admin Dashboard
 Route::get('/admin', [DashboardController::class, 'index'])
     ->middleware(['auth', 'is_admin'])
     ->name('admin.dashboard');
+
 // Admin Routes
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(function () {
     Route::resource('events', AdminEventController::class);
@@ -100,20 +94,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(
     Route::resource('venues', AdminVenueController::class);
     Route::resource('ticket-types', AdminTicketTypeController::class);
     Route::resource('orders', AdminOrderController::class)->only(['index','show']);
-    
     Route::resource('reservations', AdminReservationController::class)->only(['index','show']);
-    Route::resource('payments', AdminPaymentController::class)
-    ->only(['index','show']);
+    Route::resource('payments', AdminPaymentController::class)->only(['index','show']);
 
-Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
-    Route::resource('payments', \App\Http\Controllers\Admin\PaymentController::class)->only(['index', 'show']);
-    Route::put('payments/{id}/failed', [\App\Http\Controllers\Admin\PaymentController::class, 'markAsFailed'])
-        ->name('admin.payments.failed');
-    Route::post('/orders/{order}/pay', [AdminOrderController::class, 'pay'])->name('orders.pay');
+    // Actions spécifiques
+    Route::put('payments/{id}/failed', [AdminPaymentController::class, 'markAsFailed'])->name('payments.failed');
+    Route::post('orders/{order}/pay', [AdminOrderController::class, 'pay'])->name('orders.pay');
 
+    // Endpoint JSON pour stats
+    Route::get('/stats', [DashboardController::class, 'stats'])->name('stats');
 });
 
-Route::post('/webhook', [WebhookController::class, 'handle']);
-
-});
 require __DIR__.'/auth.php';

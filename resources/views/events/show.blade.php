@@ -4,10 +4,12 @@
 <div class="container py-4">
     <h2 class="text-primary fw-bold mb-4">{{ $event->title }}</h2>
 
+    {{-- Messages de succès --}}
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
+    {{-- Messages d'erreurs --}}
     @if($errors->any())
         <div class="alert alert-danger">
             <ul class="mb-0">
@@ -18,18 +20,31 @@
         </div>
     @endif
 
+    {{-- Infos de l'événement --}}
     <p class="lead text-light">{{ $event->description }}</p>
     <p><strong>Organisateur :</strong> {{ $event->organizer->name }}</p>
     <p><strong>Lieu :</strong> {{ $event->venue->name ?? 'Non défini' }}</p>
     <p><strong>Date :</strong> {{ $event->start_date->format('d/m/Y') }} - {{ $event->end_date->format('d/m/Y') }}</p>
     <p><strong>Prix :</strong> {{ number_format($event->ticket_price, 0, ',', ' ') }} Ar</p>
 
+    {{-- Trailer vidéo --}}
     @if($event->trailer_url)
+        @php
+            $embedUrl = \Illuminate\Support\Str::contains($event->trailer_url, 'youtube.com/watch')
+                ? str_replace('watch?v=', 'embed/', $event->trailer_url)
+                : $event->trailer_url;
+        @endphp
+
         <div class="ratio ratio-16x9 mb-4">
-            <iframe src="{{ $event->trailer_url }}" frameborder="0" allowfullscreen></iframe>
+            <iframe src="{{ $embedUrl }}"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+            </iframe>
         </div>
     @endif
 
+    {{-- Séances cinéma --}}
     @if($event->isCinema())
         <h4 class="text-light mt-4">🎬 Séances disponibles</h4>
         @forelse($event->showtimes as $showtime)
@@ -46,7 +61,7 @@
         @endforelse
     @endif
 
-    {{-- Formulaire de réservation direct (cinéma ou libre) --}}
+    {{-- Formulaire de réservation direct --}}
     <form action="{{ route('events.reserve', $event->id) }}" method="POST" class="mt-4">
         @csrf
         <div class="mb-3">

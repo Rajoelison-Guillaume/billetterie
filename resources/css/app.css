@@ -1,0 +1,69 @@
+/* Style de base des boutons */
+.btn {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Hover générique */
+.btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+/* Hover spécifique par couleur */
+.btn-primary:hover {
+    background-color: #0d6efd; /* bleu plus foncé */
+    color: #fff;
+}
+
+.btn-success:hover {
+    background-color: #198754; /* vert plus foncé */
+    color: #fff;
+}
+
+.btn-warning:hover {
+    background-color: #ffc107; /* jaune plus foncé */
+    color: #000;
+}
+
+.btn-danger:hover {
+    background-color: #dc3545; /* rouge plus foncé */
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background-color: #6c757d; /* gris plus foncé */
+    color: #fff;
+}
+
+.btn-info:hover {
+    background-color: #0dcaf0; /* cyan plus foncé */
+    color: #fff;
+}
+/* Hover futuriste pour les liens de navigation */
+.nav-link {
+    position: relative;
+    transition: all 0.3s ease-in-out;
+    color: #e2e8f0 !important;
+}
+
+.nav-link:hover {
+    color: #38bdf8 !important; /* bleu clair futuriste */
+    transform: scale(1.05);
+    text-shadow: 0 0 8px #38bdf8;
+}
+
+/* Effet néon sous forme de ligne animée */
+.nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0%;
+    height: 2px;
+    background: #38bdf8;
+    transition: width 0.3s ease-in-out;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}

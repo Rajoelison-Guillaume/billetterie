@@ -28,32 +28,32 @@ class EventController extends Controller
         ]);
     }
 
-   public function store(Request $request)
-{
-    $request->validate([
-        'title'          => 'required|string|max:255',
-        'slug'           => 'required|string|unique:events,slug',
-        'category'       => 'required|string|in:cinema,concert,festival,libre',
-        'organizer_id'   => 'required|exists:organizers,id',
-        'venue_id'       => 'required|exists:venues,id',
-        'room_id'        => 'required|exists:rooms,id',
-        'event_type_id'  => 'required|exists:event_types,id',
-        'start_date'     => 'required|date',
-        'end_date'       => 'required|date|after_or_equal:start_date',
-        'ticket_price'   => 'required|numeric|min:0',
-        'is_active'      => 'required|boolean',
-        'description'    => 'nullable|string',
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title'          => 'required|string|max:255',
+            'slug'           => 'required|string|unique:events,slug',
+            'category'       => 'required|string|in:cinema,concert,festival,libre',
+            'organizer_id'   => 'required|exists:organizers,id',
+            'venue_id'       => 'required|exists:venues,id',
+            'room_id'        => 'required|exists:rooms,id',
+            'event_type_id'  => 'required|exists:event_types,id',
+            'start_date'     => 'required|date',
+            'end_date'       => 'required|date|after_or_equal:start_date',
+            'ticket_price'   => 'required|numeric|min:0',
+            'is_active'      => 'required|boolean',
+            'description'    => 'nullable|string',
+            'trailer_url'    => 'nullable|string|max:255',
+        ]);
 
-    Event::create($request->all());
+        Event::create($validated);
 
-    return redirect()->route('admin.events.index')->with('success', 'Événement créé avec succès.');
-}
-
+        return redirect()->route('admin.events.index')->with('success', 'Événement créé avec succès.');
+    }
 
     public function show($id)
     {
-        $event = Event::with(['organizer', 'venue', 'room', 'eventType',])->findOrFail($id);
+        $event = Event::with(['organizer', 'venue', 'room', 'eventType'])->findOrFail($id);
         return view('admin.events.show', compact('event'));
     }
 
@@ -73,7 +73,7 @@ class EventController extends Controller
     {
         $event = Event::findOrFail($id);
 
-        $request->validate([
+        $validated = $request->validate([
             'title'          => 'required|string|max:255',
             'slug'           => 'required|string|unique:events,slug,' . $event->id,
             'category'       => 'required|string|in:cinema,concert,festival,libre',
@@ -84,14 +84,13 @@ class EventController extends Controller
             'start_date'     => 'required|date',
             'end_date'       => 'required|date|after_or_equal:start_date',
             'ticket_price'   => 'required|numeric|min:0',
-            'max_per_user'   => 'required|integer|min:1',
             'is_active'      => 'required|boolean',
             'description'    => 'nullable|string',
+            'trailer_url'    => 'nullable|string|max:255',
         ]);
 
-        $event->update($request->all());
+        $event->update($validated);
 
         return redirect()->route('admin.events.index')->with('success', 'Événement mis à jour.');
     }
 }
-    

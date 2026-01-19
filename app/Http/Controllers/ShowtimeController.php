@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-
 class ShowtimeController extends Controller
 {
     /**
@@ -45,75 +44,75 @@ class ShowtimeController extends Controller
     }
 
     /**
-     * Réserve une place pour une séance cinéma
+     * Réserve une ou plusieurs places pour une séance cinéma
      */
     public function reserve(Request $request, $id)
-{
-    $request->validate([
-        'seat_id' => 'required|array',
-        'seat_id.*' => 'exists:seats,id',
-        'payment_method' => 'required|in:mobile_money,cash',
-    ]);
-
-    $showtime = Showtime::with('event')->findOrFail($id);
-
-    return DB::transaction(function () use ($request, $showtime) {
-        $userId = auth()->id;
-        $total = 0;
-        $tickets = [];
-
-        foreach ($request->seat_id as $seatId) {
-            // Vérifier si la place est déjà occupée
-            $already = SeatReservation::where('showtime_id', $showtime->id)
-                ->where('seat_id', $seatId)
-                ->lockForUpdate()
-                ->exists();
-
-            if ($already) {
-                continue; // ignorer les places déjà prises
-            }
-
-            $total += $showtime->price;
-
-            $tickets[] = [
-                'seat_id' => $seatId,
-                'price' => $showtime->price,
-            ];
-        }
-
-        if (empty($tickets)) {
-            return back()->withErrors(['seat_id' => 'Toutes les places sélectionnées sont déjà réservées.']);
-        }
-
-        // Créer la commande
-        $order = Order::create([
-            'user_id' => $userId,
-            'total_amount' => $total,
-            'status' => 'pending',
-            'payment_method' => $request->payment_method,
+    {
+        $request->validate([
+            'seat_id' => 'required|array',
+            'seat_id.*' => 'exists:seats,id',
+            'payment_method' => 'required|in:mobile_money,cash',
         ]);
 
-        foreach ($tickets as $data) {
-            $ticket = Ticket::create([
-                'order_id' => $order->id,
-                'event_id' => $showtime->event_id,
-                'showtime_id' => $showtime->id,
-                'seat_id' => $data['seat_id'],
-                'price' => $data['price'],
-                'qr_code' => Str::uuid(),
-                'status' => 'unused',
+        $showtime = Showtime::with('event')->findOrFail($id);
+
+        return DB::transaction(function () use ($request, $showtime) {
+            $userId = auth()->id(); // ✅ correction
+            $total = 0;
+            $tickets = [];
+
+            foreach ($request->seat_id as $seatId) {
+                // Vérifier si la place est déjà occupée
+                $already = SeatReservation::where('showtime_id', $showtime->id)
+                    ->where('seat_id', $seatId)
+                    ->lockForUpdate()
+                    ->exists();
+
+                if ($already) {
+                    continue; // ignorer les places déjà prises
+                }
+
+                // ✅ utiliser le prix de l'événement
+                $total += $showtime->event->ticket_price;
+
+                $tickets[] = [
+                    'seat_id' => $seatId,
+                    'price' => $showtime->event->ticket_price,
+                ];
+            }
+
+            if (empty($tickets)) {
+                return back()->withErrors(['seat_id' => 'Toutes les places sélectionnées sont déjà réservées.']);
+            }
+
+            // Créer la commande
+            $order = Order::create([
+                'user_id' => $userId,
+                'total_amount' => $total,
+                'status' => 'pending',
+                'payment_method' => $request->payment_method,
             ]);
 
-            SeatReservation::create([
-                'showtime_id' => $showtime->id,
-                'seat_id' => $data['seat_id'],
-                'ticket_id' => $ticket->id,
-                'reserved_at' => now(),
-            ]);
-        }
+            foreach ($tickets as $data) {
+                $ticket = Ticket::create([
+                    'order_id' => $order->id,
+                    'event_id' => $showtime->event_id,
+                    'showtime_id' => $showtime->id,
+                    'seat_id' => $data['seat_id'],
+                    'price' => $data['price'],
+                    'qr_code' => Str::uuid(),
+                    'status' => 'unused',
+                ]);
 
-        return redirect()->route('orders.cart')->with('success', 'Places réservées et ajoutées au panier.');
-    });
-}
-    
+                SeatReservation::create([
+                    'showtime_id' => $showtime->id,
+                    'seat_id' => $data['seat_id'],
+                    'ticket_id' => $ticket->id,
+                    'reserved_at' => now(),
+                ]);
+            }
+
+            return redirect()->route('orders.cart')->with('success', 'Places réservées et ajoutées au panier.');
+        });
+    }
 }

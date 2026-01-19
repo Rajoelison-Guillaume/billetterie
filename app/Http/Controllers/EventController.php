@@ -60,8 +60,12 @@ class EventController extends Controller
 
         $request->validate([
             'payment_method' => 'required|in:mobile_money,cash',
-            'phone' => 'required_if:payment_method,mobile_money|regex:/^(?:\+261|0)(32|33|34|38)[0-9]{7}$/',
+            'phone' => [
+                'required_if:payment_method,mobile_money',
+                'regex:/^(?:\+261|0)(32|33|34|38)[0-9]{7}$/'
+            ],
         ]);
+
 
         $user = Auth::user();
         if (!$user) {
@@ -90,7 +94,7 @@ class EventController extends Controller
         $order->increment('total_amount', $event->ticket_price);
 
         if ($request->payment_method === 'mobile_money') {
-            app(\App\Services\PapiService::class)->pay(
+            app(\App\Services\EfainaService::class)->pay(
                 $order->total_amount,
                 $request->phone,
                 $request->payment_method,

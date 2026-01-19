@@ -1,112 +1,150 @@
 @extends('layouts.admin')
 
 @section('content')
-<form action="{{ route('admin.events.store') }}" method="POST">
-    @csrf
+<div class="container py-4">
+    <h2 class="fw-bold text-primary mb-4">🎬 Créer un nouvel événement</h2>
 
-    <!-- Titre -->
-    <div class="mb-3">
-        <label for="title" class="form-label">Titre</label>
-        <input type="text" name="title" class="form-control" required>
-    </div>
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-    <!-- Slug -->
-    <div class="mb-3">
-        <label for="slug" class="form-label">Slug</label>
-        <input type="text" name="slug" class="form-control" required>
-    </div>
+    <form action="{{ route('admin.events.store') }}" method="POST">
+        @csrf
 
-    <!-- Catégorie -->
-    <div class="mb-3">
-        <label for="category" class="form-label">Catégorie</label>
-        <select name="category" class="form-select" required>
-            <option value="cinema">Cinéma</option>
-            <option value="concert">Concert</option>
-            <option value="festival">Festival</option>
-            <option value="libre">Libre</option>
-        </select>
-    </div>
+        {{-- Titre + Slug --}}
+        <div class="mb-3">
+            <label for="title" class="form-label">Titre</label>
+            <input type="text" id="title" name="title" class="form-control" value="{{ old('title') }}" required>
+        </div>
 
-    <!-- Organisateur -->
-    <div class="mb-3">
-        <label for="organizer_id" class="form-label">Organisateur</label>
-        <select name="organizer_id" class="form-select" required>
-            @foreach($organizers as $organizer)
-                <option value="{{ $organizer->id }}">{{ $organizer->name }}</option>
-            @endforeach
-        </select>
-    </div>
+        <div class="mb-3">
+            <label for="slug" class="form-label">Slug</label>
+            <input type="text" id="slug" name="slug" class="form-control" value="{{ old('slug') }}" readonly>
+        </div>
 
-    <!-- Lieu -->
-    <div class="mb-3">
-        <label for="venue_id" class="form-label">Lieu</label>
-        <select name="venue_id" class="form-select" required>
-            @foreach($venues as $venue)
-                <option value="{{ $venue->id }}">{{ $venue->name }}</option>
-            @endforeach
-        </select>
-    </div>
+        {{-- Catégorie --}}
+        <div class="mb-3">
+            <label for="category" class="form-label">Catégorie</label>
+            <select id="category" name="category" class="form-select" required>
+                <option value="">-- Choisir une catégorie --</option>
+                <option value="cinema" {{ old('category') == 'cinema' ? 'selected' : '' }}>Cinéma</option>
+                <option value="concert" {{ old('category') == 'concert' ? 'selected' : '' }}>Concert</option>
+                <option value="festival" {{ old('category') == 'festival' ? 'selected' : '' }}>Festival</option>
+                <option value="libre" {{ old('category') == 'libre' ? 'selected' : '' }}>Libre</option>
+            </select>
+        </div>
 
-    <!-- Salle -->
-    <div class="mb-3">
-        <label for="room_id" class="form-label">Salle</label>
-        <select name="room_id" class="form-select" required>
-            @foreach($rooms as $room)
-                <option value="{{ $room->id }}">{{ $room->name }}</option>
-            @endforeach
-        </select>
-    </div>
+        {{-- Type d’événement (rempli automatiquement depuis catégorie) --}}
+        <div class="mb-3">
+            <label for="event_type_id" class="form-label">Type d'événement</label>
+            <select id="event_type_id" name="event_type_id" class="form-select" required>
+                <option value="">-- Choisi automatiquement selon catégorie --</option>
+                @foreach($eventTypes as $type)
+                    <option value="{{ $type->id }}">{{ $type->label }}</option>
+                @endforeach
+            </select>
+        </div>
 
-    <!-- Type d'événement -->
-    <div class="mb-3">
-        <label for="event_type_id" class="form-label">Type d'événement</label>
-        <select name="event_type_id" class="form-select" required>
-            @foreach($eventTypes as $type)
-                <option value="{{ $type->id }}">{{ $type->name }}</option>
-            @endforeach
-        </select>
-    </div>
+        {{-- Organisateur (vide au départ) --}}
+        <div class="mb-3">
+            <label for="organizer_id" class="form-label">Organisateur</label>
+            <select name="organizer_id" class="form-select" required>
+                <option value="">-- Choisir un organisateur --</option>
+                @foreach($organizers as $organizer)
+                    <option value="{{ $organizer->id }}">{{ $organizer->name }}</option>
+                @endforeach
+            </select>
+        </div>
 
-    <!-- Dates -->
-    <div class="mb-3">
-        <label for="start_date" class="form-label">Date début</label>
-        <input type="datetime-local" name="start_date" class="form-control" required>
-    </div>
+        {{-- Lieu (vide au départ) --}}
+        <div class="mb-3">
+            <label for="venue_id" class="form-label">Lieu</label>
+            <select name="venue_id" class="form-select" required>
+                <option value="">-- Choisir un lieu --</option>
+                @foreach($venues as $venue)
+                    <option value="{{ $venue->id }}">{{ $venue->name }}</option>
+                @endforeach
+            </select>
+        </div>
 
-    <div class="mb-3">
-        <label for="end_date" class="form-label">Date fin</label>
-        <input type="datetime-local" name="end_date" class="form-control" required>
-    </div>
+        {{-- Salle --}}
+        <div class="mb-3">
+            <label for="room_id" class="form-label">Salle</label>
+            <select name="room_id" class="form-select" required>
+                <option value="">-- Choisir une salle --</option>
+                @foreach($rooms as $room)
+                    <option value="{{ $room->id }}">{{ $room->name }}</option>
+                @endforeach
+            </select>
+        </div>
 
-    <!-- Prix -->
-    <div class="mb-3">
-        <label for="ticket_price" class="form-label">Prix du billet</label>
-        <input type="number" step="0.01" name="ticket_price" class="form-control" required>
-    </div>
+        {{-- Dates --}}
+        <div class="mb-3">
+            <label for="start_date" class="form-label">Date début</label>
+            <input type="datetime-local" name="start_date" class="form-control" value="{{ old('start_date') }}" required>
+        </div>
 
-    <!-- Max par utilisateur -->
-    <div class="mb-3">
-        <label for="max_per_user" class="form-label">Max par utilisateur</label>
-        <input type="number" name="max_per_user" class="form-control" value="10">
-    </div>
+        <div class="mb-3">
+            <label for="end_date" class="form-label">Date fin</label>
+            <input type="datetime-local" name="end_date" class="form-control" value="{{ old('end_date') }}" required>
+        </div>
 
-    <!-- Actif -->
-    <div class="mb-3 form-check">
-        <input type="checkbox" name="is_active" class="form-check-input" value="1" checked>
-        <label class="form-check-label" for="is_active">Activer l’événement</label>
-    </div>
+        {{-- Prix --}}
+        <div class="mb-3">
+            <label for="ticket_price" class="form-label">Prix du billet</label>
+            <input type="number" name="ticket_price" class="form-control" value="{{ old('ticket_price') }}" required>
+        </div>
 
-    <!-- Description -->
-    <div class="mb-3">
-        <label for="description" class="form-label">Description</label>
-        <textarea name="description" class="form-control"></textarea>
-    </div>
-    <div class="mb-3">
-        <label for="trailer_url" class="form-label">Lien du trailer (YouTube, Vimeo...)</label>
-        <input type="text" name="trailer_url" id="trailer_url" class="form-control" value="{{ old('trailer_url', $event->trailer_url ?? '') }}">
-    </div>
+        {{-- Actif --}}
+        <div class="mb-3 form-check">
+            <input type="checkbox" name="is_active" value="1" class="form-check-input" {{ old('is_active', true) ? 'checked' : '' }}>
+            <label class="form-check-label">Activer l'événement</label>
+        </div>
 
+        {{-- Description --}}
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="3">{{ old('description') }}</textarea>
+        </div>
 
-    <button type="submit" class="btn btn-success">Créer</button>
-</form>
+        {{-- Trailer --}}
+        <div class="mb-3">
+            <label for="trailer_url" class="form-label">Lien du trailer (YouTube, Vimeo...)</label>
+            <input type="url" name="trailer_url" class="form-control" value="{{ old('trailer_url') }}">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Créer</button>
+        <a href="{{ route('admin.events.index') }}" class="btn btn-secondary">Retour</a>
+    </form>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+    // Slug auto-généré
+    document.getElementById('title').addEventListener('input', function () {
+        const slug = this.value.toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-') 
+            .replace(/^-+|-+$/g, '');
+        document.getElementById('slug').value = slug;
+    });
+
+    // Synchronisation catégorie → type d'événement
+    document.getElementById('category').addEventListener('change', function () {
+        const selected = this.value.toLowerCase();
+        const typeSelect = document.getElementById('event_type_id');
+        for (let option of typeSelect.options) {
+            if (option.text.toLowerCase().includes(selected)) {
+                typeSelect.value = option.value;
+                break;
+            }
+        }
+    });
+</script>
 @endsection
