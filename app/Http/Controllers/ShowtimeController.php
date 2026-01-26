@@ -29,13 +29,11 @@ class ShowtimeController extends Controller
     {
         $showtime = Showtime::with(['event','room'])->findOrFail($id);
 
-        // Récupérer toutes les places de la salle
         $seats = Seat::where('room_id', $showtime->room_id)
             ->orderBy('row_label')
             ->orderBy('seat_number')
             ->get();
 
-        // Récupérer les places déjà réservées
         $occupiedSeatIds = SeatReservation::where('showtime_id', $showtime->id)
             ->pluck('seat_id')
             ->toArray();
@@ -52,27 +50,26 @@ class ShowtimeController extends Controller
             'seat_id' => 'required|array',
             'seat_id.*' => 'exists:seats,id',
             'payment_method' => 'required|in:mobile_money,cash',
+            'phone' => 'required|regex:/^03[2-9][0-9]{7}$/',
         ]);
 
         $showtime = Showtime::with('event')->findOrFail($id);
 
         return DB::transaction(function () use ($request, $showtime) {
-            $userId = auth()->id(); // ✅ correction
+            $userId = auth()->id();
             $total = 0;
             $tickets = [];
 
             foreach ($request->seat_id as $seatId) {
-                // Vérifier si la place est déjà occupée
                 $already = SeatReservation::where('showtime_id', $showtime->id)
                     ->where('seat_id', $seatId)
                     ->lockForUpdate()
                     ->exists();
 
                 if ($already) {
-                    continue; // ignorer les places déjà prises
+                    continue;
                 }
 
-                // ✅ utiliser le prix de l'événement
                 $total += $showtime->event->ticket_price;
 
                 $tickets[] = [
@@ -85,12 +82,12 @@ class ShowtimeController extends Controller
                 return back()->withErrors(['seat_id' => 'Toutes les places sélectionnées sont déjà réservées.']);
             }
 
-            // Créer la commande
             $order = Order::create([
                 'user_id' => $userId,
                 'total_amount' => $total,
                 'status' => 'pending',
                 'payment_method' => $request->payment_method,
+                'phone' => $request->phone,
             ]);
 
             foreach ($tickets as $data) {
@@ -116,3 +113,4 @@ class ShowtimeController extends Controller
         });
     }
 }
+    

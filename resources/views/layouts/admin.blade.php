@@ -28,6 +28,7 @@
                 <li><a class="nav-link" href="{{ route('admin.dashboard') }}">Tableau de bord</a></li>
                 <li><a class="nav-link" href="{{ route('admin.events.index') }}">Événements</a></li>
                 <li><a class="nav-link" href="{{ route('admin.organizers.index') }}">Organisateurs</a></li>
+                <li><a class="nav-link" href="{{ route('admin.seats.index') }}">Sièges</a></li>
                 <li><a class="nav-link" href="{{ route('admin.venues.index') }}">Salles</a></li>
                 <li><a class="nav-link" href="{{ route('admin.ticket-types.index') }}">Billets</a></li>
                 <li><a class="nav-link" href="{{ route('admin.orders.index') }}">Commandes</a></li>

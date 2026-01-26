@@ -12,7 +12,7 @@ use App\Http\Controllers\HallController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\WebhookController;
 
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
 use App\Http\Controllers\Admin\EventController as AdminEventController;
@@ -20,6 +20,8 @@ use App\Http\Controllers\Admin\OrganizerController as AdminOrganizerController;
 use App\Http\Controllers\Admin\VenueController as AdminVenueController;
 use App\Http\Controllers\Admin\TicketTypeController as AdminTicketTypeController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\AdminSeatController;
+use App\Http\Controllers\DashboardController as ClientDashboardController;
 
 // Page d’accueil
 Route::get('/', [EventController::class, 'index'])->name('home');
@@ -77,19 +79,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Dashboard utilisateur
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// ✅ Dashboard utilisateur
+Route::get('/dashboard', [ClientDashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
-// Admin Dashboard
-Route::get('/admin', [DashboardController::class, 'index'])
+// ✅ Dashboard admin
+Route::get('/admin', [AdminDashboardController::class, 'index'])
     ->middleware(['auth', 'is_admin'])
     ->name('admin.dashboard');
 
-// Admin Routes
+// ✅ Admin Routes
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(function () {
     Route::resource('events', AdminEventController::class);
+    Route::resource('seats', AdminSeatController::class);
     Route::resource('organizers', AdminOrganizerController::class);
     Route::resource('venues', AdminVenueController::class);
     Route::resource('ticket-types', AdminTicketTypeController::class);
@@ -102,7 +105,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(
     Route::post('orders/{order}/pay', [AdminOrderController::class, 'pay'])->name('orders.pay');
 
     // Endpoint JSON pour stats
-    Route::get('/stats', [DashboardController::class, 'stats'])->name('stats');
+    Route::get('/stats', [AdminDashboardController::class, 'stats'])->name('stats');
 });
 
 require __DIR__.'/auth.php';

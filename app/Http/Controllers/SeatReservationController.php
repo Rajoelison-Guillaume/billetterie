@@ -7,24 +7,37 @@ use App\Models\Ticket;
 use App\Models\Order;
 use App\Models\Showtime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class SeatReservationController extends Controller
 {
-    /** Affiche toutes les réservations (admin) */
+    /** Affiche toutes les réservations (admin uniquement) */
     public function index()
     {
+        $this->authorize('is_admin'); // middleware ou policy
         $reservations = SeatReservation::with(['showtime','seat','ticket'])->paginate(15);
         return view('reservations.index', compact('reservations'));
     }
 
-    /** Affiche une réservation spécifique (admin) */
+    /** Affiche une réservation spécifique (admin uniquement) */
     public function show($id)
     {
+        $this->authorize('is_admin');
         $reservation = SeatReservation::with(['showtime','seat','ticket'])->findOrFail($id);
         return view('reservations.show', compact('reservation'));
     }
 
-    /** Réserver une ou plusieurs places et générer les billets */
+    /** Affiche les sièges disponibles pour une séance (client) */
+    public function seats($showtimeId)
+    {
+        $showtime = Showtime::with('room.seats')->findOrFail($showtimeId);
+        $reservedSeats = SeatReservation::where('showtime_id', $showtimeId)->pluck('seat_id')->toArray();
+
+        return view('reservations.seats', compact('showtime', 'reservedSeats'));
+    }
+
+    /** Réserver une ou plusieurs places et générer les billets (client) */
     public function reserve(Request $request, $showtimeId)
     {
         $request->validate([
@@ -32,7 +45,7 @@ class SeatReservationController extends Controller
             'seat_id.*' => 'exists:seats,id',
         ]);
 
-        $user = auth()->user;
+        $user = Auth::user();
         $showtime = Showtime::with('event')->findOrFail($showtimeId);
 
         // Créer ou récupérer la commande active (panier)
