@@ -1,0 +1,1 @@
+<a href="{{ route('cinema')}}" class="btn btn-primary">Choix de place</a>

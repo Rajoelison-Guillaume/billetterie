@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Payment;
 use Illuminate\Http\Request;
-use App\Services\PapiService;
+use App\Services\EfainaService; // ⚡ utilise ton service Efaina
 
 class OrderController extends Controller
 {
@@ -51,7 +51,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Finalise le paiement d’une commande via Mobile Money (Papi.mg).
+     * Finalise le paiement d’une commande via Mobile Money (Efaina API).
      */
     public function pay(Request $request, Order $order)
     {
@@ -60,14 +60,16 @@ class OrderController extends Controller
             'phone'  => 'required|regex:/^(032|033|034)\d{7}$/',
         ]);
 
-        $result = app(PapiService::class)->pay(
+        // ⚡ Appel à ton service Efaina
+        $result = app(EfainaService::class)->pay(
             $order->total_amount,
             $request->phone,
             $request->method,
             $order->id
         );
 
-        if (isset($result['status']) && $result['status'] === 'SUCCESS') {
+        // ⚡ Vérifie la réponse de l’API Efaina
+        if (!empty($result['status']) && strtoupper($result['status']) === 'SUCCESS') {
             Payment::create([
                 'order_id'     => $order->id,
                 'amount'       => $order->total_amount,
@@ -76,10 +78,14 @@ class OrderController extends Controller
                 'provider_ref' => $result['transaction_id'] ?? 'TX-' . uniqid(),
                 'status'       => 'success',
             ]);
+
             $order->update(['status' => 'paid']);
-            return back()->with('success', 'Paiement finalisé avec succès.');
+
+            return back()->with('success', 'Paiement finalisé avec succès via Efaina.');
         }
 
-        return back()->with('error', 'Échec du paiement, veuillez réessayer.');
+        // ⚡ Gestion des erreurs
+        $errorMessage = $result['message'] ?? 'Échec du paiement, veuillez réessayer.';
+        return back()->with('error', $errorMessage);
     }
 }

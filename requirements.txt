@@ -1,0 +1,11 @@
+fakerphp/faker                 1.24.1  Faker is a PHP library that generates fake data for you.
+laravel/breeze                 2.3.8   Minimal Laravel authentication scaffolding with Blade and Tailwind.
+laravel/framework              12.40.2 The Laravel Framework.
+laravel/pail                   1.2.4   Easily delve into your Laravel application's log files directly from the command line.
+laravel/pint                   1.26.0  An opinionated code formatter for PHP.
+laravel/sail                   1.48.1  Docker files for running a basic Laravel application.
+laravel/tinker                 2.10.2  Powerful REPL for the Laravel framework.
+mockery/mockery                1.6.12  Mockery is a simple yet flexible PHP mock object framework
+nunomaduro/collision           8.8.3   Cli error handling for console/command-line PHP applications.
+phpunit/phpunit                11.5.45 The PHP Unit Testing framework.
+simplesoftwareio/simple-qrcode 4.2.0   Simple QrCode is a QR code generator made for Laravel.

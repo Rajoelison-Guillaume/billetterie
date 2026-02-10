@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\SeatReservation;
+use App\Models\Reservation;
 
 class ReservationController extends Controller
 {
     public function index()
     {
-        $reservations = SeatReservation::with(['user','showtime','seat'])
+        // Charger les relations nécessaires
+        $reservations = Reservation::with(['user','event','seats'])
             ->latest()
             ->paginate(20);
 
@@ -18,7 +19,7 @@ class ReservationController extends Controller
 
     public function show($id)
     {
-        $reservation = SeatReservation::with(['user','showtime','seat'])
+        $reservation = Reservation::with(['user','event','seats'])
             ->findOrFail($id);
 
         return view('admin.reservations.show', compact('reservation'));

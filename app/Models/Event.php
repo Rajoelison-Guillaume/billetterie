@@ -32,6 +32,9 @@ class Event extends Model
     public function organizer()     { return $this->belongsTo(Organizer::class); }
     public function venue()         { return $this->belongsTo(Venue::class); }
     public function room()          { return $this->belongsTo(Room::class); }
+    
+    public function reservations() { return $this->hasMany(Reservation::class); }
+    
     public function eventType()     { return $this->belongsTo(EventType::class); }
     public function showtimes()     { return $this->hasMany(Showtime::class); }
     public function tickets() 

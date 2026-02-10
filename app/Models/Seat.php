@@ -31,10 +31,19 @@ class Seat extends Model
     /**
      * Réservations associées à ce siège
      */
-    public function reservations(): HasMany
-    {
-        return $this->hasMany(SeatReservation::class);
-    }
+    
+   /* public function reservations()
+{
+    return $this->belongsToMany(Reservation::class, 'reservation_seat');
+}
+*/
+public function reservations()
+{
+    return $this->belongsToMany(Reservation::class, 'reservation_seat')
+                ->withPivot('showtime_id','ticket_id','reserved_at')
+                ->withTimestamps();
+}
+
 
     /**
      * Ticket associé à ce siège

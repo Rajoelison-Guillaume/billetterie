@@ -27,6 +27,7 @@ class User extends Authenticatable
     return $this->hasMany(Payment::class);
     }
 
+    
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);

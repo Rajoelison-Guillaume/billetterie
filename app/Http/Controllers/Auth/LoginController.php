@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
+
+
     /**
      * Affiche le formulaire de connexion.
      */
@@ -30,7 +32,7 @@ class LoginController extends Controller
         // Tentative de connexion
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'));
+            return redirect()->intended(route('home'));
         }
 
         // Retour en cas d'échec

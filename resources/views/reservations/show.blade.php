@@ -2,78 +2,62 @@
 
 @section('content')
 <div class="container py-4">
-    <h2 class="fw-bold text-primary mb-4">Réserver votre billet</h2>
+    <h2 class="fw-bold text-primary mb-4">
+        📄 Détails de la réservation #{{ $reservation->id }}
+    </h2>
 
-    {{-- Messages --}}
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-    @if($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+    <div class="card mb-4">
+        <div class="card-header">
+            Événement : {{ $reservation->event->title }}
         </div>
-    @endif
+        <div class="card-body">
+            <p><strong>Date :</strong> {{ $reservation->event->start_date->format('d/m/Y') }}</p>
+            <p><strong>Lieu :</strong> {{ $reservation->event->venue->name ?? 'Non défini' }}</p>
+            <p><strong>Statut :</strong> 
+                <span class="badge bg-{{ $reservation->status === 'confirmée' ? 'success' : 'danger' }}">
+                    {{ ucfirst($reservation->status) }}
+                </span>
+            </p>
 
-    <form action="{{ route('client.reservation.store') }}" method="POST">
-        @csrf
+            @if($reservation->event->isCinema())
+                <div class="legend mb-3">
+                    <span class="legend-item free"></span> Libre (vert)
+                    <span class="legend-item reserved"></span> Occupé (gris)
+                    <span class="legend-item selected"></span> Sélectionné (rouge)
+                </div>
 
-        <input type="hidden" name="event_id" value="{{ $event->id }}">
-        <input type="hidden" name="showtime_id" value="{{ $showtime->id ?? null }}">
-        <input type="hidden" name="price" value="{{ $event->ticket_price }}">
+                <h5 class="mt-4">Disposition des sièges 🎬</h5>
+                <div class="screen">ÉCRAN GÉANT</div>
+                <div class="cinema" id="cinema-{{ $reservation->id }}"></div>
 
-        {{-- Cas cinéma : affichage des sièges --}}
-        @if($event->event_type_id == 1) 
-            <h5 class="mb-3">Choisissez votre siège :</h5>
-            <div class="seat-map">
-                @foreach($sessionSeats as $sessionSeat)
-                    @php $isReserved = $sessionSeat->status === 'reserved'; @endphp
-                    <label class="btn {{ $isReserved ? 'btn-danger disabled' : 'btn-success' }}">
-                        <input type="radio" name="seat_id" value="{{ $sessionSeat->seat_id }}" {{ $isReserved ? 'disabled' : '' }}>
-                        {{ $sessionSeat->seat->row_label }}{{ $sessionSeat->seat->seat_number }}
-                    </label>
-                @endforeach
-            </div>
-        @else
-            {{-- Cas libre : pas de siège --}}
-            <p>Billet simple pour l’événement libre.</p>
-        @endif
-
-        {{-- Paiement --}}
-        <h5 class="mt-4">Mode de paiement :</h5>
-        <div class="mb-3">
-            <select name="payment_method" id="payment_method" class="form-select" required>
-                <option value="cash">Cash</option>
-                <option value="mobile_money">Mobile Money</option>
-            </select>
+                <div id="info-{{ $reservation->id }}" class="mt-4">
+                    <strong>Sièges réservés :</strong>
+                    <ul id="selectedSeats-{{ $reservation->id }}">
+                        @if($reservation->seats)
+                            @foreach(explode(',', $reservation->seats) as $seat)
+                                <li>{{ $seat }}</li>
+                            @endforeach
+                        @endif
+                    </ul>
+                </div>
+            @else
+                <p><strong>Détails :</strong> Réservation simple sans choix de place.</p>
+            @endif
         </div>
-
-        <div id="mobile-money-fields" style="display:none;">
-            <div class="mb-3">
-                <label for="provider" class="form-label">Opérateur</label>
-                <select name="provider" class="form-select">
-                    <option value="MVola">MVola</option>
-                    <option value="OrangeMoney">Orange Money</option>
-                    <option value="AirtelMoney">Airtel Money</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="provider_ref" class="form-label">Code transaction</label>
-                <input type="text" name="provider_ref" class="form-control">
-            </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary">✅ Réserver</button>
-    </form>
+    </div>
 </div>
 
-<script>
-    document.getElementById('payment_method').addEventListener('change', function() {
-        document.getElementById('mobile-money-fields').style.display = 
-            this.value === 'mobile_money' ? 'block' : 'none';
-    });
-</script>
+<style>
+    .cinema { position: relative; width: 100%; height: 600px; margin-top: 30px; }
+    .seat { width: 32px; height: 32px; border-radius: 50%; position: absolute; border: 2px solid #333; }
+    .seat.free { background: limegreen; }
+    .seat.selected { background: crimson; }
+    .seat.reserved { background: gray; }
+    .screen { width: 60%; height: 30px; background: silver; margin: 0 auto; border-radius: 5px; text-align: center; line-height: 30px; font-weight: bold; }
+    .legend { display: flex; gap: 20px; align-items: center; }
+    .legend-item { display: inline-block; width: 22px; height: 22px; border-radius: 50%; border: 2px solid #333; margin-right: 5px; }
+    .legend-item.free { background: limegreen; }
+    .legend-item.reserved { background: gray; }
+    .legend-item.selected { background: crimson; }
+</style>
 @endsection

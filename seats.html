@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Salle de cinéma</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    .cinema {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+
+    .row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .level {
+      display: flex;
+      justify-content: center;
+      margin: 5px 0;
+    }
+
+    .seat {
+      width: 25px;
+      height: 25px;
+      background: crimson;
+      margin: 2px;
+      border-radius: 4px;
+      transition: 0.3s;
+    }
+
+    .seat:hover {
+      background: gold;
+      cursor: pointer;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Disposition des sièges 🎬</h1>
+  <div class="cinema">
+    <!-- Rangée 1 -->
+    <div class="row">
+      <h2>Rangée 1</h2>
+      <!-- Génération des 10 niveaux -->
+      <!-- Niveau 1 : 10 sièges -->
+      <div class="level">
+        <!-- 10 sièges -->
+        <div class="seat"></div><div class="seat"></div><div class="seat"></div><div class="seat"></div>
+        <div class="seat"></div><div class="seat"></div><div class="seat"></div><div class="seat"></div>
+        <div class="seat"></div><div class="seat"></div>
+      </div>
+      <!-- Niveau 2 : 12 sièges -->
+      <div class="level">
+        <!-- 12 sièges -->
+        <!-- ... répéter -->
+      </div>
+      <!-- etc. jusqu’à 10 niveaux -->
+    </div>
+
+    <!-- Rangée 2 -->
+    <div class="row">
+      <h2>Rangée 2</h2>
+      <!-- mêmes niveaux -->
+    </div>
+
+    <!-- Rangée 3 -->
+    <div class="row">
+      <h2>Rangée 3</h2>
+      <!-- mêmes niveaux -->
+    </div>
+  </div>
+</body>
+</html>

@@ -1,44 +1,29 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
-@if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
+@extends('layouts.app')
 
-@if($errors->any())
-    <div class="alert alert-danger">
-        <ul class="mb-0">
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+@section('content')
+<div class="container py-4">
+    <h2 class="fw-bold text-primary mb-4">📱 Modifier mon profil</h2>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
-            </div>
+    <form method="POST" action="{{ route('profile.update') }}">
+        @csrf
+        @method('PATCH')
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
-            </div>
+        <div class="mb-3">
+            <label for="name" class="form-label">Nom</label>
+            <input id="name" type="text" class="form-control" name="name" value="{{ old('name', Auth::user()->name) }}" required>
         </div>
-    </div>
-</x-app-layout>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input id="email" type="email" class="form-control" name="email" value="{{ old('email', Auth::user()->email) }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="phone" class="form-label">Numéro de téléphone</label>
+            <input id="phone" type="text" class="form-control" name="phone" value="{{ old('phone', Auth::user()->phone) }}" required placeholder="034xxxxxxx ou +26134xxxxxxx">
+        </div>
+
+        <button type="submit" class="btn btn-success">Mettre à jour</button>
+    </form>
+</div>
+@endsection

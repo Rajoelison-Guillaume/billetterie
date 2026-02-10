@@ -12,6 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        '/webhook/efaina', // ✅ exclu pour que Efaina puisse appeler sans token CSRF
+        'webhook/efaina', // ✅ exclu pour que Efaina puisse appeler sans token CSRF
     ];
 }

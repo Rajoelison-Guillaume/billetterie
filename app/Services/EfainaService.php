@@ -7,41 +7,139 @@ use Illuminate\Support\Facades\Log;
 
 class EfainaService
 {
-    /**
-     * Initier un paiement via Efaina.mg
-     *
-     * @param float $amount
-     * @param string $phone
-     * @param string $provider ("mvola", "orange_money", "airtel_money")
-     * @param string $reference  Référence unique de la commande
-     * @return array
-     */
-    public function pay($amount, $phone, $provider, $reference)
+    protected string $apiUrl;
+    protected string $apiToken;
+    protected string $walletId;
+
+    public function __construct()
     {
-        $apiUrl = env('EFAINA_API_URL', 'https://api.efaina.mg');
-        $apiKey = env('EFAINA_API_KEY');
+        // ⚡ Sandbox par défaut
+        $this->apiUrl   = rtrim(config('services.efaina.url', 'https://sandback.efaina.com/api/public/v1'), '/');
+        $this->apiToken = config('services.efaina.token');
+        $this->walletId = config('services.efaina.wallet_id');
+    }
 
-        $payload = [
-            'amount'      => $amount,
-            'currency'    => 'MGA',
-            'provider'    => $provider,
-            'phone'       => $phone,
-            'reference'   => $reference,
-            'description' => 'Paiement Billetterie MG',
-            'callback_url'=> route('webhook.efaina'), // webhook Laravel
-        ];
+    /**
+     * Crée un checkout Efaina
+     */
+/**  *
+ *    public function pay(int $amount, string $phone, string $method, int $orderId): array
+    *{
+       * $payload = [
+        *    'amount'      => $amount,
+        *    'comment'     => "Paiement commande #{$orderId}",
+        *    'wallet_id'   => $this->walletId,
+        *    'company'     => 'Billetterie MG',
+        *    'return_urls' => [
+         *       'return_to_merchant_url' => route('checkout.success'),
+        *        'cancel_url'             => route('checkout.cancel'),
+        *    ],
+         *   'customer' => [
+        *        'phone'    => $phone,
+        *        'provider' => $method,
+        *    ],
+        *];
 
-        Log::info('Paiement Efaina envoyé', $payload);
+      *  Log::info('Envoi du paiement Efaina', $payload);
 
-        $response = Http::withToken($apiKey)->post($apiUrl . '/payments', $payload);
+      *  try {
+           * $response = Http::withToken($this->apiToken)
+          *      ->timeout(30)
+         *       ->post("{$this->apiUrl}/pay/create-checkout", $payload);
 
-        if ($response->failed()) {
-            Log::error('Paiement Efaina échoué', [
-                'status' => $response->status(),
-                'body'   => $response->body(),
+        *    if ($response->failed()) {
+    *            Log::error('Échec du paiement Efaina', [
+   *                 'status' => $response->status(),
+  *                  'body'   => $response->body(),
+ *               ]);
+*
+     *           return [
+     *               'success' => false,
+    *                'status'  => $response->status(),
+   *                 'body'    => $response->body(),
+  *              ];
+ *           }
+*
+      *      $data = $response->json();
+*
+        *    return [
+       *         'success'      => true,
+      *          'checkout_url' => $data['data']['checkout_url'] ?? null,
+     *           'reference'    => $data['data']['transaction'] ?? null,
+       *     ];
+    *    } catch (\Exception $e) {
+   *         Log::error('Erreur connexion Efaina', [
+  *              'message' => $e->getMessage(),
+ *           ]);
+*
+     *       return [
+    *            'success' => false,
+   *             'status'  => 500,
+  *              'body'    => $e->getMessage(),
+ *           ];
+*        }
+*    }
+*/
+
+
+public function pay(int $amount, string $phone, string $method, int $orderId): array
+{
+    $payload = [
+        'amount'      => $amount,
+        'comment'     => "Paiement commande #{$orderId}",
+        'wallet_id'   => $this->walletId,
+        'company'     => 'Billetterie MG',
+        'return_urls' => [
+            'return_to_merchant_url' => route('checkout.success'),
+            'cancel_url'             => route('checkout.cancel'),
+        ],
+        'customer' => [
+            'phone'    => $phone,
+            'provider' => $method,
+        ],
+    ];
+
+    $response = Http::withToken($this->apiToken)
+        ->post("{$this->apiUrl}/pay/create-checkout", $payload);
+
+    if ($response->failed()) {
+        Log::error('Échec du paiement Efaina', $response->json());
+        return ['success' => false];
+    }
+
+    $data = $response->json('data');
+
+    // Sauvegarde du paiement local
+    \App\Models\Payment::create([
+        'order_id'     => $orderId,
+        'provider'     => 'efaina',
+        'provider_ref' => $data['transaction'] ?? null,
+        'status'       => 'pending',
+        'amount'       => $amount,
+    ]);
+
+    return [
+        'success'      => true,
+        'checkout_url' => $data['checkout_url'] ?? null,
+        'reference'    => $data['transaction'] ?? null,
+    ];
+}
+
+    /**
+     * Vérifie une transaction Efaina
+     */
+    public function verify(string $transactionId): ?array
+    {
+        try {
+            $response = Http::withToken($this->apiToken)
+                ->get("{$this->apiUrl}/details-transaction/{$transactionId}");
+
+            return $response->json();
+        } catch (\Exception $e) {
+            Log::error('Erreur vérification Efaina', [
+                'message' => $e->getMessage(),
             ]);
+            return null;
         }
-
-        return $response->json();
     }
 }

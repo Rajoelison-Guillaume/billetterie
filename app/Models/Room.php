@@ -22,4 +22,28 @@ class Room extends Model
     {
         return $this->hasMany(Showtime::class);
     }
+    public function generateSeats()
+{
+    $seatsPerRow = 20;
+    $total       = $this->capacity;
+    $rows        = ceil($total / $seatsPerRow);
+
+    $this->seats()->delete();
+
+    for ($r = 0; $r < $rows; $r++) {
+        $rowLabel = chr(65 + $r);
+
+        for ($s = 1; $s <= $seatsPerRow; $s++) {
+            $seatIndex = $r * $seatsPerRow + $s;
+            if ($seatIndex > $total) break;
+
+            $this->seats()->create([
+                'row_label'     => $rowLabel,
+                'seat_number'   => $s,
+                'is_accessible' => false,
+            ]);
+        }
+    }
+}
+
 }

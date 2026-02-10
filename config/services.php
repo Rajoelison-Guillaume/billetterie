@@ -34,5 +34,10 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'efaina' => [
+        'token' => env('EFAINA_TOKEN'), 
+        'wallet_id' => env('EFAINA_WALLET_ID'), 
+        'url' => env('EFAINA_BASE_URL', 'https://sandback.efaina.com/v1'), 
+        ], 
 
 ];

@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Seat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Seat;
-use App\Models\User;
 
 class PaymentController extends Controller
 {
@@ -24,7 +24,7 @@ class PaymentController extends Controller
         if (!$user) {
             return redirect()->route('login');
         }
-        /** @var \App\Models\User $user */
+
         $order = $user->orders()
             ->where('status', 'pending')
             ->latest()
@@ -39,61 +39,85 @@ class PaymentController extends Controller
 
     /** Traitement du paiement + réservation */
     public function pay(Request $request)
-{
-    $request->validate([
-        'method'  => 'required|string',
-        'seat_id' => 'nullable|integer',
-        'phone'   => 'nullable|string|regex:/^(032|033|034)\d{7}$/',
-    ]);
+    {
+        $request->validate([
+            'method'  => 'required|string',
+            'seat_id' => 'nullable|integer',
+        ]);
 
-    $user = Auth::user();
-    $order = $user->orders()->where('status', 'pending')->latest()->first();
+        $user = Auth::user();
+        $order = $user->orders()->where('status', 'pending')->latest()->first();
 
-    if (!$order) {
-        return redirect()->route('events.index')->with('error', 'Votre panier est vide.');
-    }
-
-    $event = $order->tickets()->first()->event;
-
-    $provider = match ($request->method) {
-        'mvola'        => 'MVola',
-        'orange_money' => 'OrangeMoney',
-        'airtel_money' => 'AirtelMoney',
-        'cash'         => null,
-    };
-
-    $providerRef = 'TX-' . uniqid();
-    $status = 'success'; // ou 'pending' si API réelle
-
-    Payment::create([
-        'order_id'     => $order->id,
-        'amount'       => $order->total_amount,
-        'method'       => $request->method,
-        'provider'     => $provider,
-        'provider_ref' => $providerRef,
-        'status'       => $status,
-    ]);
-
-    $order->update(['status' => 'paid']);
-
-    $ticket = $order->tickets()->where('status', 'pending')->first();
-
-    if ($event->isCinema()) {
-        $seat = Seat::findOrFail($request->seat_id);
-
-        if ($seat->ticket && $seat->ticket->status === 'paid') {
-            return back()->with('error', 'Ce siège est déjà réservé.');
+        if (!$order) {
+            return redirect()->route('events.index')->with('error', 'Votre panier est vide.');
         }
 
-        $ticket->update([
-            'seat_id' => $seat->id,
-            'status'  => 'paid',
+        $ticket = $order->tickets()->first();
+        $event  = $ticket->event;
+        $phone  = $user->phone;
+
+        // ⚡ Appel réel à Efaina
+        $result = app(\App\Services\EfainaService::class)->pay(
+            $order->total_amount,
+            $phone,
+            $request->method,
+            $order->id
+        );
+
+        if (!$result['success']) {
+            return back()->with('error', 'Échec du paiement Efaina : ' . ($result['body'] ?? ''));
+        }
+
+        // ✅ Créer un paiement local en "pending"
+        Payment::create([
+            'order_id'     => $order->id,
+            'amount'       => $order->total_amount,
+            'method'       => $request->method,
+            'provider'     => 'efaina',
+            'provider_ref' => $result['reference'] ?? null,
+            'status'       => 'pending', // sera mis à jour par le webhook
         ]);
-    } else {
-        $ticket->update(['status' => 'paid']);
+
+        // ✅ Mettre la commande en attente
+        $order->update(['status' => 'pending']);
+
+        // ✅ Gestion des tickets
+        if ($event->isCinema()) {
+            // Cas cinéma → il y a des sièges
+            if ($request->seat_id) {
+                $seat = Seat::findOrFail($request->seat_id);
+
+                if ($seat->ticket && $seat->ticket->status === 'paid') {
+                    return back()->with('error', 'Ce siège est déjà réservé.');
+                }
+
+                $ticket->update([
+                    'seat_id' => $seat->id,
+                    'status'  => 'pending', // confirmé par webhook
+                ]);
+            } else {
+                $ticket->update(['status' => 'pending']);
+            }
+        } else {
+            // Cas événement libre → pas de siège
+            $ticket->update(['status' => 'pending']);
+        }
+
+        // ✅ Rediriger vers la page de checkout Efaina
+        if (!empty($result['checkout_url'])) {
+            return redirect()->away($result['checkout_url']);
+        }
+
+        return redirect()->route('tickets.index')->with('success', 'Paiement initié, en attente de confirmation Efaina.');
     }
 
-    return redirect()->route('tickets.index')->with('success', 'Paiement et réservation effectués avec succès !');
-}
+    public function success()
+    {
+        return view('checkout.success');
+    }
 
+    public function cancel()
+    {
+        return view('checkout.cancel');
+    }
 }

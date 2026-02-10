@@ -60,4 +60,13 @@ class AdminSeatController extends Controller
         $seat->delete();
         return redirect()->route('admin.seats.index')->with('success', 'Siège supprimé.');
     }
+
+    /**
+     * ✅ Affichage du plan de salle complet
+     */
+    public function showRoom(Room $room)
+    {
+        $seats = $room->seats()->orderBy('row_label')->orderBy('seat_number')->get();
+        return view('admin.seats.room', compact('room', 'seats'));
+    }
 }

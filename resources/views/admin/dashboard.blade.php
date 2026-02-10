@@ -101,6 +101,9 @@
 
     {{-- Graphiques dynamiques --}}
     <div class="row mt-5">
+        <div class="col-md-12 mb-4">
+            <canvas id="revenueByMonthChart"></canvas>
+        </div>
         <div class="col-md-6 mb-4">
             <canvas id="ticketsChart"></canvas>
         </div>
@@ -110,13 +113,13 @@
         <div class="col-md-6 mb-4">
             <canvas id="typeChart"></canvas>
         </div>
-        <div class="col-md-12 mb-4">
-            <canvas id="revenueByMonthChart"></canvas>
-        </div>
+        
     </div>
 </div>
 @endsection
 
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -155,7 +158,7 @@
     const typeChart = new Chart(typeCtx, {
         type: 'doughnut',
         data: {
-            labels: @json($eventsByType->pluck('name')),
+            labels: @json($eventsByType->pluck('label')),
             datasets: [{
                 data: @json($eventsByType->pluck('events_count')),
                 backgroundColor: ['#f59e0b','#10b981','#ef4444','#8b5cf6']
@@ -196,3 +199,4 @@
     });
 </script>
 @endsection
+

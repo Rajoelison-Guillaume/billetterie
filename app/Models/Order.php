@@ -11,7 +11,7 @@ use App\Models\Payment;
 
 class Order extends Model
 {
-    protected $fillable = ['user_id','total_amount','status','payment_method'];
+    protected $fillable = ['user_id','total_amount','status','payment_method', 'transaction_id',];
 
     public function user(){ return $this->belongsTo(User::class); }
     public function tickets(){ return $this->hasMany(Ticket::class); }
