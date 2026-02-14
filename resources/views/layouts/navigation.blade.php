@@ -9,7 +9,6 @@
 
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav me-auto">
-                <!-- Menu Événements -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="eventDropdown" role="button" data-bs-toggle="dropdown">
                         Agenda
@@ -21,20 +20,16 @@
                         <li><a class="dropdown-item text-light" href="{{ route('events.index') }}">📅 Tous les événements</a></li>
                     </ul>
                 </li>
-
                 <li class="nav-item"><a class="nav-link" href="{{ route('organizers.index') }}">📣 Organisateurs</a></li>
             </ul>
 
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('orders.cart') }}">🛒 Panier</a>
-                </li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('orders.cart') }}">🛒 Panier</a></li>
 
                 @auth
-                    {{-- Lien Admin visible uniquement pour les admins --}}
                     @if(Auth::user()->role === 'admin')
                         <li class="nav-item">
-                            <a class="nav-link text-info fw-bold" href="{{ route('admin.events.index') }}">🎛️ Espace Admin</a>
+                            <a class="nav-link text-info fw-bold" href="{{ route('admin.events.index') }}">🎛️ Admin</a>
                         </li>
                     @endif
 
@@ -53,8 +48,16 @@
                         </ul>
                     </li>
                 @else
-                    <li class="nav-item"><a class="btn btn-outline-light me-2" href="{{ route('login') }}">Connexion</a></li>
-                    <li class="nav-item"><a class="btn btn-info text-dark fw-bold" href="{{ route('register') }}">S'inscrire</a></li>
+                    <!-- Boutons adaptés au mobile -->
+                    <li class="nav-item d-lg-none mb-2">
+                        <a class="btn btn-outline-light w-100" href="{{ route('login') }}">Connexion</a>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="btn btn-info text-dark fw-bold w-100" href="{{ route('register') }}">S'inscrire</a>
+                    </li>
+                    <!-- Version desktop -->
+                    <li class="nav-item d-none d-lg-block"><a class="btn btn-outline-light me-2" href="{{ route('login') }}">Connexion</a></li>
+                    <li class="nav-item d-none d-lg-block"><a class="btn btn-info text-dark fw-bold" href="{{ route('register') }}">S'inscrire</a></li>
                 @endauth
             </ul>
         </div>

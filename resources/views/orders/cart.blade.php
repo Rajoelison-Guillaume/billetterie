@@ -2,7 +2,6 @@
 
 @section('content')
 <div class="container">
-    {{-- Panier actif --}}
     <h2 class="fw-bold text-primary mb-4">🛒 Mon panier</h2>
 
     @if(session('success'))
@@ -32,12 +31,12 @@
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
                         @foreach($tickets as $ticket)
-                            <li class="list-group-item bg-dark text-light">
+                            <li class="list-group-item bg-dark text-light text-wrap">
                                 🎫 {{ $ticket->event->title }} — {{ number_format($ticket->price, 0, ',', ' ') }} Ar
                                 @if($ticket->seat)
                                     <br><small>🪑 Place : {{ $ticket->seat->row_label }}{{ $ticket->seat->seat_number }}</small>
                                 @endif
-                                <br><small>🔗 QR Code : {{ $ticket->qr_code }}</small>
+                                <br><small class="d-block">🔗 QR Code : {{ $ticket->qr_code }}</small>
                             </li>
                         @endforeach
                     </ul>
@@ -48,7 +47,6 @@
             </div>
         @endforeach
 
-        {{-- Total global du panier --}}
         <div class="alert alert-info fw-bold">
             Total panier : {{ number_format($activeOrder->total_amount, 0, ',', ' ') }} Ar
         </div>
@@ -56,7 +54,6 @@
         <p class="text-muted">Votre panier est vide.</p>
     @endif
 
-    {{-- Historique des commandes --}}
     <h3 class="mt-5">Historique de vos commandes</h3>
     @forelse($pastOrders as $order)
         <div class="card mb-3">
@@ -66,12 +63,12 @@
             <div class="card-body">
                 <ul class="list-group">
                     @foreach($order->tickets as $ticket)
-                        <li class="list-group-item">
+                        <li class="list-group-item text-wrap">
                             🎟️ {{ $ticket->event->title }} — {{ number_format($ticket->price, 0, ',', ' ') }} Ar
                             @if($ticket->seat)
                                 <br><small>🪑 Place : {{ $ticket->seat->row_label }}{{ $ticket->seat->seat_number }}</small>
                             @endif
-                            <br><small>🔗 QR Code : {{ $ticket->qr_code }}</small>
+                            <br><small class="d-block">🔗 QR Code : {{ $ticket->qr_code }}</small>
                         </li>
                     @endforeach
                 </ul>
