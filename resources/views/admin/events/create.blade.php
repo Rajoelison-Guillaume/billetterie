@@ -84,16 +84,24 @@
             </select>
         </div>
 
-        {{-- Dates --}}
-        <div class="mb-3">
-            <label for="start_date" class="form-label">Date début</label>
-            <input type="datetime-local" name="start_date" class="form-control" value="{{ old('start_date') }}" required>
-        </div>
 
         <div class="mb-3">
-            <label for="end_date" class="form-label">Date fin</label>
-            <input type="datetime-local" name="end_date" class="form-control" value="{{ old('end_date') }}" required>
-        </div>
+    <label for="start_date" class="form-label">Date début</label>
+    <input type="datetime-local" name="start_date" class="form-control" 
+           value="{{ old('start_date') }}" 
+           min="{{ now()->format('Y-m-d\TH:i') }}" required>
+</div>
+
+<div class="mb-3">
+    <label for="end_date" class="form-label">Date fin</label>
+    <input type="datetime-local" name="end_date" class="form-control" 
+           value="{{ old('end_date') }}" 
+           min="{{ now()->format('Y-m-d\TH:i') }}" required>
+</div>
+
+
+        {{-- Dates --}}
+        
 
         {{-- Prix --}}
         <div class="mb-3">

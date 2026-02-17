@@ -21,6 +21,7 @@
                     </ul>
                 </li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('organizers.index') }}">📣 Organisateurs</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('reservations.index') }}">🎫 Mes réservations</a></li>
             </ul>
 
             <ul class="navbar-nav ms-auto">
@@ -48,14 +49,12 @@
                         </ul>
                     </li>
                 @else
-                    <!-- Boutons adaptés au mobile -->
                     <li class="nav-item d-lg-none mb-2">
                         <a class="btn btn-outline-light w-100" href="{{ route('login') }}">Connexion</a>
                     </li>
                     <li class="nav-item d-lg-none">
                         <a class="btn btn-info text-dark fw-bold w-100" href="{{ route('register') }}">S'inscrire</a>
                     </li>
-                    <!-- Version desktop -->
                     <li class="nav-item d-none d-lg-block"><a class="btn btn-outline-light me-2" href="{{ route('login') }}">Connexion</a></li>
                     <li class="nav-item d-none d-lg-block"><a class="btn btn-info text-dark fw-bold" href="{{ route('register') }}">S'inscrire</a></li>
                 @endauth

@@ -25,7 +25,7 @@
         <input type="text" name="id" class="form-control" placeholder="ID commande" value="{{ request('id') }}">
     </div>
     <div class="col-md-2">
-        <input type="text" name="qr" class="form-control" placeholder="QR code" value="{{ request('qr') }}">
+        <input type="text" name="qr" class="form-control" placeholder="QR code" value="{{ request('qr_code') }}">
     </div>
     <div class="col-md-2">
         <input type="text" name="event" class="form-control" placeholder="Événement" value="{{ request('event') }}">
@@ -34,11 +34,22 @@
         <input type="date" name="date" class="form-control" value="{{ request('date') }}">
     </div>
     <div class="col-md-2">
-        <input type="text" name="location" class="form-control" placeholder="Lieu" value="{{ request('location') }}">
+        <input type="text" name="location" class="form-control" placeholder="Lieu" value="{{ request('venue') }}">
     </div>
+    <div class="col-md-2">
+        <input type="date" name="date_start" class="form-control" placeholder="Date de début" value="{{ request('date_start') }}">
+    </div>
+    <div class="col-md-2">
+        <input type="date" name="date_end" class="form-control" placeholder="Date de fin" value="{{ request('date_end') }}">
+    </div>
+
     <div class="col-md-2 d-flex gap-2">
         <button type="submit" class="btn btn-primary">Rechercher</button>
         <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary">Réinitialiser</a>
+        <div class="mb-3 text-end">
+    <a href="{{ route('admin.orders.export.pdf', request()->all()) }}" class="btn btn-sm btn-danger">Export PDF</a>
+</div>
+
     </div>
 </form>
 

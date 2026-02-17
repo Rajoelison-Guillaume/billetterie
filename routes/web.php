@@ -43,7 +43,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // ✅ Webhook Efaina (callback API)
-//Route::post('/webhook/efaina', [WebhookController::class, 'handle'])->name('webhook.efaina');
+Route::post('/webhook/efaina', [WebhookController::class, 'handle'])->name('webhook.efaina');
 
 // ✅ Réservations
 Route::middleware(['auth'])->group(function () {
@@ -72,6 +72,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orders/cart', [OrderController::class, 'cart'])->name('orders.cart');
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/add', [OrderController::class, 'add'])->name('orders.add');
+    Route::get('orders/export/{format}', [OrderController::class, 'export'])->name('admin.orders.export');
+
 });
 
 // ✅ Tickets
@@ -100,8 +102,8 @@ Route::get('/admin', [AdminDashboardController::class, 'index'])
     ->middleware(['auth', 'is_admin'])
     ->name('admin.dashboard');
 
-// ✅ Routes Admin
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(function () {
+// ✅ Routes d’administration
+ Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(function () {
     Route::resource('events', AdminEventController::class);
     Route::resource('seats', AdminSeatController::class);
     Route::resource('organizers', AdminOrganizerController::class);
@@ -110,6 +112,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(
     Route::resource('orders', AdminOrderController::class)->only(['index','show']);
     Route::resource('reservations', AdminReservationController::class)->only(['index','show']);
     Route::resource('payments', AdminPaymentController::class)->only(['index','show']);
+
+    // ✅ Export PDF des commandes
+    Route::get('orders/export/pdf', [AdminOrderController::class, 'exportPdf'])->name('orders.export.pdf');
 
     // ✅ Gestion des sièges par salle
     Route::get('seats/{room}/plan', [AdminSeatController::class, 'showRoom'])->name('seats.room');

@@ -13,20 +13,46 @@ use Illuminate\Support\Str;
 
 class EventController extends Controller
 {
-    public function index(Request $request)
-    {
-        $query = $request->input('q');
 
-        $events = Event::with(['organizer', 'venue', 'eventType'])
-            ->where('is_active', true)
-            ->when($query, function ($q) use ($query) {
-                $q->where('title', 'like', "%{$query}%")
-                  ->orWhere('description', 'like', "%{$query}%");
-            })
-            ->get();
+        /**
+        * Affiche la liste des événements avec recherche basique.
+        */
+        public function index(Request $request)
+        { $query = Event::with(['organizer', 'venue', 'eventType'])
+         ->where('is_active', true);
+        if ($request->filled('q')) 
+            { $query->where(function($q) use ($request) 
+        {
+            $q->where('title', 'like', "%{$request->q}%") ->orWhere('description', 'like', "%{$request->q}%");
+            }); 
+            } if ($request->filled('date_start') && $request->filled('date_end')) 
+            {
+                 $query->whereBetween('start_date', [$request->date_start, $request->date_end]); 
+                 }
+                  elseif ($request->filled('date_start')) 
+                    { $query->whereDate('start_date', '>=', $request->date_start); 
+                  } elseif ($request->filled('date_end')) 
+                  {
+                    $query->whereDate('start_date', '<=', $request->date_end); 
+                    } $events = $query->orderBy('start_date', 'asc')->paginate(9);
+                    return view('events.index', compact('events')); }
+ //   public function index(Request $request)
+   // {
+        // $query = $request->input('q');
 
-        return view('events.index', compact('events'));
-    }
+        // $events = Event::with(['organizer', 'venue', 'eventType'])
+        //     ->where('is_active', true)
+        //     ->when($query, function ($q) use ($query) {
+        //         $q->where('title', 'like', "%{$query}%")
+        //           ->orWhere('description', 'like', "%{$query}%");
+        //     })
+        //     ->get();
+
+        // return view('events.index', compact('events'));
+
+
+        
+  //  }
 
     //Public function show($id)
     //

@@ -37,7 +37,8 @@ return [
     'efaina' => [
         'token' => env('EFAINA_TOKEN'), 
         'wallet_id' => env('EFAINA_WALLET_ID'), 
-        'url' => env('EFAINA_BASE_URL', 'https://sandback.efaina.com/v1'), 
+        'url' => env('EFAINA_BASE_URL', 'https://sandback.efaina.com/api/public/v1'),
+        //'url' => env('EFAINA_BASE_URL', 'https://sandback.efaina.com/v1'), 
         ], 
 
 ];

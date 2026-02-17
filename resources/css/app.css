@@ -1,58 +1,57 @@
-/* Style de base des boutons */
+/* ===== Boutons ===== */
 .btn {
     transition: all 0.3s ease-in-out;
+    border-radius: 6px;
+    font-weight: 600;
 }
 
-/* Hover générique */
 .btn:hover {
     transform: translateY(-2px);
-    opacity: 0.9;
+    opacity: 0.95;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.7); /* glow cyan */
 }
 
-/* Hover spécifique par couleur */
+/* Boutons principaux */
+.btn-primary {
+    background: linear-gradient(90deg, #2563eb, #38bdf8);
+    border: none;
+    font-weight: 600;
+    color: #fff;
+}
 .btn-primary:hover {
-    background-color: #0d6efd; /* bleu plus foncé */
-    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px #38bdf8;
+    background: linear-gradient(90deg, #1e3a8a, #2563eb);
 }
 
-.btn-success:hover {
-    background-color: #198754; /* vert plus foncé */
-    color: #fff;
+/* Autres variantes */
+.btn-success:hover { background-color: #198754; color: #fff; }
+.btn-warning:hover { background-color: #ffc107; color: #000; }
+.btn-danger:hover { background-color: #dc3545; color: #fff; }
+.btn-secondary:hover { background-color: #6c757d; color: #fff; }
+.btn-info:hover { background-color: #0dcaf0; color: #fff; }
+
+/* ===== Navbar ===== */
+.navbar {
+    background: linear-gradient(90deg, #1e3a8a, #2563eb);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.navbar-brand span {
+    text-shadow: 0 0 8px #38bdf8;
 }
 
-.btn-warning:hover {
-    background-color: #ffc107; /* jaune plus foncé */
-    color: #000;
-}
-
-.btn-danger:hover {
-    background-color: #dc3545; /* rouge plus foncé */
-    color: #fff;
-}
-
-.btn-secondary:hover {
-    background-color: #6c757d; /* gris plus foncé */
-    color: #fff;
-}
-
-.btn-info:hover {
-    background-color: #0dcaf0; /* cyan plus foncé */
-    color: #fff;
-}
-/* Hover futuriste pour les liens de navigation */
+/* Liens navigation */
 .nav-link {
     position: relative;
     transition: all 0.3s ease-in-out;
     color: #e2e8f0 !important;
 }
-
 .nav-link:hover {
-    color: #38bdf8 !important; /* bleu clair futuriste */
+    color: #38bdf8 !important;
     transform: scale(1.05);
-    text-shadow: 0 0 8px #38bdf8;
+    text-shadow: 0 0 10px #38bdf8;
 }
-
-/* Effet néon sous forme de ligne animée */
 .nav-link::after {
     content: '';
     position: absolute;
@@ -63,7 +62,113 @@
     background: #38bdf8;
     transition: width 0.3s ease-in-out;
 }
+.nav-link:hover::after { width: 100%; }
 
-.nav-link:hover::after {
+/* Dropdown */
+.dropdown-menu {
+    background: #0f172a;
+    border: 1px solid #2563eb;
+    box-shadow: 0 0 15px rgba(37,99,235,0.6);
+}
+.dropdown-item:hover {
+    background: rgba(37,99,235,0.2);
+    color: #38bdf8 !important;
+}
+
+/* ===== Footer ===== */
+.footer {
+    background: linear-gradient(90deg, #1e3a8a, #0f172a);
+    color: #e2e8f0;
+}
+.footer-link {
+    color: #e2e8f0;
+    text-decoration: none;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+.footer-link:hover {
+    color: #38bdf8;
+    text-shadow: 0 0 8px #38bdf8;
+}
+.footer-social i {
+    font-size: 1.6rem;
+    color: #38bdf8;
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+.footer-social i:hover {
+    transform: scale(1.2);
+    text-shadow: 0 0 12px #38bdf8;
+}
+
+/* ===== Cartes ===== */
+.card {
+    background-color:#111827; /* fond sombre */
+    border:1px solid rgba(59,130,246,0.6);
+    box-shadow: 0 0 15px rgba(59,130,246,0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 25px rgba(59,130,246,0.7);
+}
+.card h5 {
+    color: #60a5fa; /* bleu clair contrasté */
+    font-weight: 600;
+    text-shadow: 0 0 6px rgba(59,130,246,0.6);
+}
+
+/* ===== Chiffres ===== */
+.dashboard-number {
+    color: #ffffff; /* blanc pur */
+    font-weight: 700;
+    font-size: 1.6rem;
+}
+.dashboard-number-blue {
+    color: #38bdf8; /* bleu néon */
+    text-shadow: 0 0 12px rgba(56,189,248,0.9);
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+
+/* ===== Graphiques Chart.js ===== */
+.chart-container {
+    position: relative;
     width: 100%;
+    height: 400px;
+}
+
+/* ===== Hero Section ===== */
+.hero {
+    background: linear-gradient(135deg, #0f172a, #1e3a8a, #2563eb);
+    background-size: 400% 400%;
+    animation: gradientMove 12s ease infinite;
+    color: #e2e8f0;
+    padding: 140px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Animation du dégradé */
+@keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+/* Effet lumineux sur le titre */
+.hero h1 {
+    text-shadow: 0 0 15px rgba(59,130,246,0.8);
+}
+
+/* Bouton call-to-action */
+.hero .btn-primary {
+    background: linear-gradient(90deg, #2563eb, #38bdf8);
+    border: none;
+    font-weight: 600;
+    padding: 12px 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hero .btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #38bdf8;
 }

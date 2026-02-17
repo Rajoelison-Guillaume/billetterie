@@ -39,7 +39,8 @@
             </td>
             <td>{{ $payment->created_at->format('d/m/Y H:i') }}</td>
             <td>
-                <a href="{{ route('payments.show', $payment->id) }}" class="btn btn-info btn-sm">👁️ Voir</a>
+                <a href="{{ route('admin.payments.show', $payment->id) }}" class="btn btn-info btn-sm">👁️ Voir</a>
+
                 <form action="{{ route('admin.payments.failed', $payment->id) }}" method="POST" class="d-inline">
                     @csrf
                     @method('PUT')
