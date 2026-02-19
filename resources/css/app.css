@@ -99,7 +99,7 @@
     text-shadow: 0 0 12px #38bdf8;
 }
 
-/* ===== Cartes ===== */
+/* ===== Cartes sombres ===== */
 .card {
     background-color:#111827; /* fond sombre */
     border:1px solid rgba(59,130,246,0.6);
@@ -114,6 +114,18 @@
     color: #60a5fa; /* bleu clair contrasté */
     font-weight: 600;
     text-shadow: 0 0 6px rgba(59,130,246,0.6);
+}
+
+/* ===== Cartes claires pour pages show ===== */
+.card-light {
+    background-color: #f8fafc; /* gris très clair */
+    color: #1e293b; /* texte sombre */
+    border: 1px solid rgba(59,130,246,0.4);
+    box-shadow: 0 0 12px rgba(59,130,246,0.2);
+}
+.card-light h5, .card-light h2 {
+    color: #2563eb; /* bleu vif */
+    text-shadow: none;
 }
 
 /* ===== Chiffres ===== */
@@ -171,4 +183,58 @@
 .hero .btn-primary:hover {
     transform: scale(1.05);
     box-shadow: 0 0 20px #38bdf8;
+}
+
+/* ===== Tables Admin Uniformisées ===== */
+.table-admin {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #0f172a; /* fond sombre */
+    color: #e2e8f0; /* texte clair */
+    box-shadow: 0 0 15px rgba(59,130,246,0.3);
+}
+
+.table-admin thead {
+    background: linear-gradient(90deg, #1e3a8a, #2563eb);
+    color: #fff;
+    font-weight: 600;
+    text-shadow: 0 0 6px rgba(56,189,248,0.8);
+}
+
+.table-admin th, 
+.table-admin td {
+    border: 1px solid rgba(59,130,246,0.4);
+    padding: 12px;
+    vertical-align: middle;
+}
+
+.table-admin tbody tr:hover {
+    background-color: rgba(59,130,246,0.15); /* survol bleu */
+    transition: background-color 0.3s ease;
+}
+
+/* Boutons dans les tables */
+.table-admin .btn {
+    font-weight: 600;
+    border-radius: 6px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.table-admin .btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(59,130,246,0.6);
+}
+
+/* ===== Tables contrastées pour pages show ===== */
+.table-contrast {
+    background-color: #f8fafc;
+    color: #1e293b;
+    border: 1px solid rgba(59,130,246,0.4);
+}
+.table-contrast thead {
+    background: linear-gradient(90deg, #2563eb, #38bdf8);
+    color: #fff;
+    text-shadow: 0 0 6px rgba(56,189,248,0.8);
+}
+.table-contrast tbody tr:hover {
+    background-color: rgba(59,130,246,0.1);
 }

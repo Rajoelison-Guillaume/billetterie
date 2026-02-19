@@ -53,13 +53,13 @@
 .dashboard-number, .dashboard-number-neon {
     font-size: 2rem;
     font-weight: bold;
-    color: #00f0ff;
+    color: black;
     text-shadow: 0 0 10px #00f0ff;
 }
 
 /* Cartes avec contraste fort */
 .card {
-    background-color: #1e293b; /* fond sombre */
+    background-color: whitesmoke; /* fond clair */
     border: 1px solid rgba(0,240,255,0.3); /* halo bleu */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -70,8 +70,8 @@
 
 /* Titres et labels */
 h2, h5 {
-    color: #00f0ff;
-    text-shadow: 0 0 6px #00f0ff;
+    color: black;
+    text-shadow: 0 0 4px #00f0ff;
 }
 
 /* Tableaux */
