@@ -3,12 +3,12 @@
 @section('content')
 <div class="container py-4">
 
-    <!-- Hero + Navigation -->
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold text-primary">Billetterie Madagascar</h1>
-        <p class="lead text-light">Réservez vos billets pour les meilleurs événements à Madagascar</p>
+    <!-- Hero -->
+    <div class="hero mb-5">
+        <h1 class="display-4 fw-bold">Billetterie Madagascar</h1>
+        <p class="lead">Réservez vos billets pour les meilleurs événements à Madagascar</p>
         <div class="mt-3">
-            <a href="{{ route('events.index') }}" class="btn btn-info text-dark fw-bold">🎫 Voir les événements</a>
+            <a href="{{ route('events.index') }}" class="btn btn-primary">🎫 Voir les événements</a>
             <a href="{{ route('orders.cart') }}" class="btn btn-secondary">🛒 Mon panier</a>
             @auth
                 @if($totalReservations > 0)
@@ -21,24 +21,39 @@
     </div>
 
     <!-- Statistiques globales -->
-    <div class="row text-center text-light mb-5">
-        <div class="col-md-4"><h2>{{ $eventsCount }}</h2><p>Événements disponibles</p></div>
-        <div class="col-md-4"><h2>{{ $ticketsCount }}</h2><p>Billets vendus</p></div>
-        <div class="col-md-4"><h2>{{ $organizersCount }}</h2><p>Organisateurs partenaires</p></div>
+    <div class="stats-grid">
+        <div class="stats-card">
+            <h2>{{ $eventsCount }}</h2>
+            <p>Événements disponibles</p>
+        </div>
+        <div class="stats-card">
+            <h2>{{ $ticketsCount }}</h2>
+            <p>Billets vendus</p>
+        </div>
+        <div class="stats-card">
+            <h2>{{ $organizersCount }}</h2>
+            <p>Organisateurs partenaires</p>
+        </div>
     </div>
 
     <!-- Statistiques personnelles -->
     @auth
     <div class="row mb-4">
         <div class="col-md-6">
-            <div class="card bg-info text-white text-center"><div class="card-body">
-                <h5>Billets achetés</h5><p class="fs-4">{{ $totalTickets }}</p>
-            </div></div>
+            <div class="card text-center futuristic-card">
+                <div class="card-body">
+                    <h5>Billets achetés</h5>
+                    <p class="dashboard-number-blue">{{ $totalTickets }}</p>
+                </div>
+            </div>
         </div>
         <div class="col-md-6">
-            <div class="card bg-success text-white text-center"><div class="card-body">
-                <h5>Réservations effectuées</h5><p class="fs-4">{{ $totalReservations }}</p>
-            </div></div>
+            <div class="card text-center futuristic-card">
+                <div class="card-body">
+                    <h5>Réservations effectuées</h5>
+                    <p class="dashboard-number-blue">{{ $totalReservations }}</p>
+                </div>
+            </div>
         </div>
     </div>
     @endauth
@@ -53,7 +68,7 @@
     @endauth
 
     <!-- Événements disponibles -->
-    <div class="card mb-4">
+    <div class="card mb-4 futuristic-card">
         <div class="card-header fw-bold">📅 Événements disponibles</div>
         <div class="card-body">
             <ul class="list-group">
@@ -70,11 +85,11 @@
     </div>
 
     <!-- Organisateurs en vedette -->
-    <h3 class="text-light mt-5 mb-3">🏆 Organisateurs en vedette</h3>
+    <h3 class="mt-5 mb-3 text-primary">🏆 Organisateurs en vedette</h3>
     <div class="row">
         @forelse($featuredOrganizers as $organizer)
             <div class="col-md-4 mb-4">
-                <div class="card bg-dark text-white shadow">
+                <div class="card shadow futuristic-card">
                     @if($organizer->logo)
                         <img src="{{ asset('storage/' . $organizer->logo) }}" class="card-img-top" alt="{{ $organizer->name }}">
                     @endif
@@ -91,11 +106,11 @@
     </div>
 
     <!-- Section cinéma -->
-    <h3 class="text-light mt-5 mb-3">🎬 Cinéma & Spectacles</h3>
+    <h3 class="mt-5 mb-3 text-primary">🎬 Cinéma & Spectacles</h3>
     <div class="row">
         @forelse($cinemaEvents as $cinema)
             <div class="col-md-4 mb-4">
-                <div class="card bg-dark text-white shadow">
+                <div class="card shadow futuristic-card">
                     <div class="card-body">
                         <h5 class="card-title">{{ $cinema->title }}</h5>
                         <p class="card-text">{{ $cinema->start_date?->format('d/m/Y') ?? 'Date non définie' }} — {{ $cinema->venue->name ?? 'Lieu inconnu' }}</p>
@@ -110,7 +125,7 @@
 
     <!-- Réservations du client -->
     @auth
-    <div class="card mb-4">
+    <div class="card mb-4 futuristic-card">
         <div class="card-header fw-bold">🧾 Vos réservations</div>
         <div class="card-body">
             <table class="table table-striped">
@@ -153,7 +168,7 @@
     </div>
 
     <!-- Historique des commandes -->
-    <div class="card">
+    <div class="card futuristic-card">
         <div class="card-header fw-bold">📜 Historique des commandes</div>
         <div class="card-body">
             @forelse($orders as $order)

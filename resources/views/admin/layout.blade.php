@@ -11,8 +11,8 @@
     <!-- CSS global -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow">
+<body class="admin">
+<nav class="navbar navbar-expand-lg navbar-dark navbar-admin sticky-top shadow">
     <div class="container-fluid">
         <a class="navbar-brand fw-bold" href="{{ route('admin.dashboard') }}">
             <span class="text-info">Admin</span> <span class="text-light">Billetterie MG</span>
@@ -46,7 +46,7 @@
 
 <main class="container-fluid py-4">@yield('content')</main>
 
-<footer class="footer text-center py-4 mt-5">
+<footer class="footer-admin">
     <p>&copy; {{ date('Y') }} Billetterie Madagascar — Interface Admin</p>
 </footer>
 

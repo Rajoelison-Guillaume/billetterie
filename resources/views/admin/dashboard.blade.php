@@ -107,12 +107,12 @@
             options: {
                 responsive: true,
                 plugins: { 
-                    title: { display: true, text: 'Billets par événement', color:'#e2e8f0' },
-                    legend: { labels: { color:'#e2e8f0' } }
+                    title: { display: true, text: 'Billets par événement', color:'#71a4e7' },
+                    legend: { labels: { color:'#3b82f6' } }
                 },
                 scales: {
-                    x: { ticks: { color:'#e2e8f0' } },
-                    y: { ticks: { color:'#e2e8f0' } }
+                    x: { ticks: { color:'#000000' } },
+                    y: { ticks: { color:'#000000' } }
                 }
             }
         });
@@ -130,10 +130,10 @@
             },
             options: {
                 responsive: true,
-                plugins: { title: { display: true, text: 'Événements par lieu', color:'#e2e8f0' } },
+                plugins: { title: { display: true, text: 'Événements par lieu', color:'#22c55e' } },
                 scales: {
-                    x: { ticks: { color:'#e2e8f0' } },
-                    y: { ticks: { color:'#e2e8f0' } }
+                    x: { ticks: { color:'#000000' } },
+                    y: { ticks: { color:'#000000' } }
                 }
             }
         });
@@ -151,8 +151,8 @@
             options: {
                 responsive: true,
                 plugins: { 
-                    title: { display: true, text: 'Répartition des types d\'événements', color:'#e2e8f0' },
-                    legend: { labels: { color:'#e2e8f0' } }
+                    title: { display: true, text: 'Répartition des types d\'événements', color:'#e7da22' },
+                    legend: { labels: { color:'#000000' } }
                 }
             }
         });
@@ -166,7 +166,7 @@
                     label: 'Revenus mensuels (Ar)',
                     data: {!! json_encode(array_values($revenueByMonth->toArray())) !!},
                     borderColor: '#ef4444',
-                    backgroundColor: 'rgba(239,68,68,0.2)',
+                    backgroundColor: 'rgba(235, 213, 14, 0.2)',
                     fill: true,
                     tension: 0.3,
                     pointBackgroundColor: '#ef4444'
@@ -174,10 +174,10 @@
             },
             options: {
                 responsive: true,
-                plugins: { title: { display: true, text: 'Évolution des revenus par mois', color:'#e2e8f0' } },
+                plugins: { title: { display: true, text: 'Évolution des revenus par mois', color:'#ef4444' } },
                 scales: {
-                    x: { ticks: { color:'#e2e8f0' } },
-                    y: { ticks: { color:'#e2e8f0', callback: value => value + ' Ar' } }
+                    x: { ticks: { color:'#000000' } },
+                    y: { ticks: { color:'#000000', callback: value => value + ' Ar' } }
                 }
             }
         });

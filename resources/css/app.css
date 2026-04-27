@@ -78,7 +78,7 @@
 /* ===== Footer ===== */
 .footer {
     background: linear-gradient(90deg, #1e3a8a, #0f172a);
-    color: #e2e8f0;
+    color: #83e2f3;
 }
 .footer-link {
     color: #e2e8f0;
@@ -99,9 +99,9 @@
     text-shadow: 0 0 12px #38bdf8;
 }
 
-/* ===== Cartes sombres ===== */
+/* ===== Cartes clair ===== */
 .card {
-    background-color:#111827; /* fond sombre */
+    background-color:#c1c7d3; 
     border:1px solid rgba(59,130,246,0.6);
     box-shadow: 0 0 15px rgba(59,130,246,0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -118,7 +118,7 @@
 
 /* ===== Cartes claires pour pages show ===== */
 .card-light {
-    background-color: #f8fafc; /* gris très clair */
+    background-color: #2E4053; /* gris très clair */
     color: #1e293b; /* texte sombre */
     border: 1px solid rgba(59,130,246,0.4);
     box-shadow: 0 0 12px rgba(59,130,246,0.2);
@@ -130,7 +130,7 @@
 
 /* ===== Chiffres ===== */
 .dashboard-number {
-    color: #ffffff; /* blanc pur */
+    color: #201d1d; /* sombre  */
     font-weight: 700;
     font-size: 1.6rem;
 }
@@ -169,7 +169,7 @@
 
 /* Effet lumineux sur le titre */
 .hero h1 {
-    text-shadow: 0 0 15px rgba(59,130,246,0.8);
+    text-shadow: 0 0 15px rgba(246, 59, 59, 0.8);
 }
 
 /* Bouton call-to-action */
@@ -189,14 +189,14 @@
 .table-admin {
     width: 100%;
     border-collapse: collapse;
-    background-color: #0f172a; /* fond sombre */
-    color: #e2e8f0; /* texte clair */
+    background-color: #b3bbdb; /* fond clair */
+    color: #383a3d; /* texte sombre */
     box-shadow: 0 0 15px rgba(59,130,246,0.3);
 }
 
 .table-admin thead {
     background: linear-gradient(90deg, #1e3a8a, #2563eb);
-    color: #fff;
+    color: #cc00ff;
     font-weight: 600;
     text-shadow: 0 0 6px rgba(56,189,248,0.8);
 }
@@ -237,4 +237,51 @@
 }
 .table-contrast tbody tr:hover {
     background-color: rgba(59,130,246,0.1);
+}
+
+
+
+
+
+
+
+
+/* Pagination*/
+/* ===== Pagination compacte avec flèches ===== */
+.pagination {
+    justify-content: center; /* centrer la pagination */
+    margin-top: 1rem;
+}
+
+.pagination .page-link {
+    padding: 4px 10px;       /* réduire la taille */
+    font-size: 0.85rem;      /* texte plus petit */
+    border-radius: 6px;
+    color: #38bdf8;          /* bleu néon */
+    background-color: #f3f6ff; /* fond sombre */
+    border: 1px solid rgba(56,189,248,0.4);
+    transition: all 0.2s ease;
+}
+
+.pagination .page-link:hover {
+    background-color: #38bdf8;
+    color: #000;
+    box-shadow: 0 0 8px #38bdf8;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #38bdf8;
+    color: #000;
+    font-weight: bold;
+    box-shadow: 0 0 10px #38bdf8;
+}
+
+/* Icônes flèches pour précédent/suivant */
+.pagination .page-item:first-child .page-link::before {
+    content: "◀ ";
+    font-weight: bold;
+}
+.pagination .page-item:last-child .page-link::after {
+    content: " ▶";
+    font-weight: bold;
 }

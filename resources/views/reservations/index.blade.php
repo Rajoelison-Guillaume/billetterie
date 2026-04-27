@@ -38,14 +38,14 @@
     @endforeach
 </div>
 
-<style>
+<!-- <style>
     .text-neon {
-        color: #00f0ff; /* bleu néon futuriste */
+        color: #2665a0; /* bleu néon futuriste */
         text-shadow: 0 0 8px #00f0ff;
     }
     .card-header {
         background: linear-gradient(90deg, #0d47a1, #1976d2);
         border-bottom: 2px solid #00f0ff;
     }
-</style>
+</style> -->
 @endsection

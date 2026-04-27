@@ -4,94 +4,12 @@
     <meta charset="UTF-8">
     <title>Admin - @yield('title','Tableau de bord')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- CSS global -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-
-    <style>
-        body { background-color:#0f172a; color:#e2e8f0; font-family:'Segoe UI', sans-serif; }
-        .navbar {
-            background: rgba(30,58,138,0.85);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .card {
-            background-color:#1e293b;
-            border:1px solid rgba(37,99,235,0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 15px rgba(37,99,235,0.6);
-        }
-        .btn-primary {
-            background: linear-gradient(90deg,#2563eb,#06b6d4);
-            border:none;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 15px #06b6d4;
-        }
-        footer {
-            background: linear-gradient(90deg,#1e3a8a,#0f172a);
-            color:#e2e8f0;
-        }
-        .stat-number {
-            background: rgba(37,99,235,0.2);
-            color: #fff;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-weight: bold;
-        }
-        /* Chiffres clés en bleu néon futuriste */
-.dashboard-number, .dashboard-number-neon {
-    font-size: 2rem;
-    font-weight: bold;
-    color: black;
-    text-shadow: 0 0 10px #00f0ff;
-}
-
-/* Cartes avec contraste fort */
-.card {
-    background-color: whitesmoke; /* fond clair */
-    border: 1px solid rgba(0,240,255,0.3); /* halo bleu */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.card:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 15px rgba(0,240,255,0.6);
-}
-
-/* Titres et labels */
-h2, h5 {
-    color: black;
-    text-shadow: 0 0 4px #00f0ff;
-}
-
-/* Tableaux */
-.table thead {
-    background-color: #00f0ff;
-    color: #000;
-}
-.table-dark td, .table-dark th {
-    border-color: #333;
-}
-
-/* Graphiques Chart.js */
-canvas {
-    background-color: #1a1a1a;
-    border-radius: 10px;
-    padding: 10px;
-}
-
-
-    </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow">
@@ -126,12 +44,15 @@ canvas {
     </div>
 </nav>
 
-<main class="container-fluid py-4">@yield('content')</main>
+<main class="container-fluid py-4 bg-light">
+    @yield('content')
+</main>
 
-<footer class="text-center py-4 mt-5">
+<footer class="footer text-center">
     <p>&copy; {{ date('Y') }} Billetterie Madagascar — Interface Admin</p>
 </footer>
 
+<script src="{{ asset('js/app.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 @yield('scripts')

@@ -35,7 +35,7 @@
         <select name="type" class="form-select" required>
             <option value="">-- Sélectionner un type --</option>
             <option value="hall" {{ old('type') == 'hall' ? 'selected' : '' }}>Salle polyvalente</option>
-            <option value="cinema" {{ old('type') == 'cinema' ? 'selected' : '' }}>Cinéma</option>
+            <option value="cinema" {{ old('type') == 'cinema' ? 'selected' : '' }}>Salle de cinéma</option>
             <option value="plein_air" {{ old('type') == 'plein_air' ? 'selected' : '' }}>Plein air</option>
             <option value="stade" {{ old('type') == 'stade' ? 'selected' : '' }}>Stade</option>
             <option value="theatre" {{ old('type') == 'theatre' ? 'selected' : '' }}>Théâtre</option>

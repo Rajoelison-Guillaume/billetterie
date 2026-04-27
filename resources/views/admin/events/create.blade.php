@@ -20,23 +20,27 @@
         {{-- Titre + Slug --}}
         <div class="mb-3">
             <label for="title" class="form-label">Titre</label>
-            <input type="text" id="title" name="title" class="form-control" value="{{ old('title') }}" required>
+            <input type="text" id="title" name="title" class="form-control"
+                   value="{{ old('title') }}" required>
         </div>
 
         <div class="mb-3">
             <label for="slug" class="form-label">Slug</label>
-            <input type="text" id="slug" name="slug" class="form-control" value="{{ old('slug') }}" readonly>
+            <input type="text" id="slug" name="slug" class="form-control"
+                   value="{{ old('slug') }}" readonly>
         </div>
 
-        {{-- Catégorie --}}
+        {{-- Catégorie (alimentée par event_types) --}}
         <div class="mb-3">
             <label for="category" class="form-label">Catégorie</label>
             <select id="category" name="category" class="form-select" required>
                 <option value="">-- Choisir une catégorie --</option>
-                <option value="cinema" {{ old('category') == 'cinema' ? 'selected' : '' }}>Cinéma</option>
-                <option value="concert" {{ old('category') == 'concert' ? 'selected' : '' }}>Concert</option>
-                <option value="festival" {{ old('category') == 'festival' ? 'selected' : '' }}>Festival</option>
-                <option value="libre" {{ old('category') == 'libre' ? 'selected' : '' }}>Libre</option>
+                @foreach($eventTypes as $type)
+                    <option value="{{ strtolower($type->code) }}"
+                        {{ old('category') == strtolower($type->code) ? 'selected' : '' }}>
+                        {{ $type->label }}
+                    </option>
+                @endforeach
             </select>
         </div>
 
@@ -51,7 +55,7 @@
             </select>
         </div>
 
-        {{-- Organisateur (vide au départ) --}}
+        {{-- Organisateur --}}
         <div class="mb-3">
             <label for="organizer_id" class="form-label">Organisateur</label>
             <select name="organizer_id" class="form-select" required>
@@ -62,10 +66,10 @@
             </select>
         </div>
 
-        {{-- Lieu (vide au départ) --}}
+        {{-- Lieu --}}
         <div class="mb-3">
             <label for="venue_id" class="form-label">Lieu</label>
-            <select name="venue_id" class="form-select" required>
+            <select id="venue_id" name="venue_id" class="form-select" required>
                 <option value="">-- Choisir un lieu --</option>
                 @foreach($venues as $venue)
                     <option value="{{ $venue->id }}">{{ $venue->name }}</option>
@@ -73,45 +77,43 @@
             </select>
         </div>
 
-        {{-- Salle --}}
+        {{-- Salle (filtrée par lieu) --}}
         <div class="mb-3">
             <label for="room_id" class="form-label">Salle</label>
-            <select name="room_id" class="form-select" required>
+            <select id="room_id" name="room_id" class="form-select" required>
                 <option value="">-- Choisir une salle --</option>
                 @foreach($rooms as $room)
-                    <option value="{{ $room->id }}">{{ $room->name }}</option>
+                    <option value="{{ $room->id }}" data-venue="{{ $room->venue_id }}">
+                        {{ $room->name }}
+                    </option>
                 @endforeach
             </select>
         </div>
 
+        {{-- Dates --}}
+        <div class="mb-3">
+            <label for="start_date" class="form-label">Date début</label>
+            <input type="datetime-local" name="start_date" class="form-control"
+                   value="{{ old('start_date') }}" min="{{ now()->format('Y-m-d\TH:i') }}" required>
+        </div>
 
         <div class="mb-3">
-    <label for="start_date" class="form-label">Date début</label>
-    <input type="datetime-local" name="start_date" class="form-control" 
-           value="{{ old('start_date') }}" 
-           min="{{ now()->format('Y-m-d\TH:i') }}" required>
-</div>
-
-<div class="mb-3">
-    <label for="end_date" class="form-label">Date fin</label>
-    <input type="datetime-local" name="end_date" class="form-control" 
-           value="{{ old('end_date') }}" 
-           min="{{ now()->format('Y-m-d\TH:i') }}" required>
-</div>
-
-
-        {{-- Dates --}}
-        
+            <label for="end_date" class="form-label">Date fin</label>
+            <input type="datetime-local" name="end_date" class="form-control"
+                   value="{{ old('end_date') }}" min="{{ now()->format('Y-m-d\TH:i') }}" required>
+        </div>
 
         {{-- Prix --}}
         <div class="mb-3">
             <label for="ticket_price" class="form-label">Prix du billet</label>
-            <input type="number" name="ticket_price" class="form-control" value="{{ old('ticket_price') }}" required>
+            <input type="number" name="ticket_price" class="form-control"
+                   value="{{ old('ticket_price') }}" min="0" step="100" required>
         </div>
 
         {{-- Actif --}}
         <div class="mb-3 form-check">
-            <input type="checkbox" name="is_active" value="1" class="form-check-input" {{ old('is_active', true) ? 'checked' : '' }}>
+            <input type="checkbox" name="is_active" value="1" class="form-check-input"
+                   {{ old('is_active', true) ? 'checked' : '' }}>
             <label class="form-check-label">Activer l'événement</label>
         </div>
 
@@ -153,6 +155,17 @@
                 break;
             }
         }
+    });
+
+    // Filtrer les salles selon le lieu choisi
+    document.getElementById('venue_id').addEventListener('change', function () {
+        const venueId = this.value;
+        const roomSelect = document.getElementById('room_id');
+        for (let option of roomSelect.options) {
+            if (!option.value) continue;
+            option.style.display = (option.dataset.venue === venueId) ? 'block' : 'none';
+        }
+        roomSelect.value = '';
     });
 </script>
 @endsection

@@ -5,9 +5,7 @@
     <h2 class="fw-bold text-primary mb-4">📋 Liste des événements</h2>
 
     @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
     <div class="mb-3">
@@ -15,9 +13,9 @@
     </div>
 
     <div class="card">
-        <div class="card-body">
-            <table class="table table-striped table-hover align-middle">
-                <thead class="table-dark">
+        <div class="card-body table-responsive">
+            <table class="table table-dark table-striped table-hover align-middle">
+                <thead>
                     <tr>
                         <th>#</th>
                         <th>Titre</th>
@@ -56,16 +54,16 @@
                             <td>
                                 <a href="{{ route('admin.events.show', $event->id) }}" class="btn btn-sm btn-info">👁 Voir</a>
                                 <a href="{{ route('admin.events.edit', $event->id) }}" class="btn btn-sm btn-warning">✏ Modifier</a>
-                                <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" class="d-inline">
+                                <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Supprimer cet événement ?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cet événement ?')">🗑 Supprimer</button>
+                                    <button type="submit" class="btn btn-sm btn-danger">🗑 Supprimer</button>
                                 </form>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="12" class="text-center">Aucun événement trouvé.</td>
+                            <td colspan="12" class="text-center text-muted">Aucun événement trouvé.</td>
                         </tr>
                     @endforelse
                 </tbody>
