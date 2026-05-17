@@ -30,14 +30,15 @@
                             <td>{{ $organizer->id }}</td>
                             <td class="text-center" style="width: 120px;">
                                 @if($organizer->logo)
-                                    <img src="{{ asset('storage/' . $organizer->logo) }}" 
-                                         alt="Logo" 
-                                         class="img-fluid rounded shadow-sm" 
-                                         style="max-height: 60px;">
+                                    <img src="{{ Storage::url($organizer->logo) }}" 
+                                        alt="Logo {{ $organizer->name }}" 
+                                        class="img-fluid rounded shadow-sm" 
+                                        style="max-height: 60px;">
                                 @else
                                     <span class="text-muted">Aucun</span>
                                 @endif
                             </td>
+
                             <td>{{ $organizer->name }}</td>
                             <td>{{ $organizer->contact_email ?? '-' }}</td>
                             <td>{{ $organizer->contact_phone ?? '-' }}</td>

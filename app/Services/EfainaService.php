@@ -103,7 +103,7 @@ public function pay(int $amount, string $phone, string $method, int $orderId): a
         ->post("{$this->apiUrl}/pay/create-checkout", $payload);
 
     if ($response->failed()) {
-        Log::error('Échec du paiement Efaina', $response->json());
+        Log::error('Échec du paiement Efaina', $response->json() ?? []);
         return ['success' => false];
     }
 

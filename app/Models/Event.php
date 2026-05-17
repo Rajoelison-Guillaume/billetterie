@@ -7,20 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Event extends Model
 {
     protected $fillable = [
-        'organizer_id',
-        'venue_id',
-        'room_id',
-        'event_type_id',
-        'category',
-        'title',
-        'slug',
-        'description',
-        'image_path',
-        'trailer_url',
-        'start_date',
-        'end_date',
-        'ticket_price',
-        'is_active',
+        'organizer_id', 'venue_id', 'room_id', 'event_type_id',
+        'title', 'slug', 'description', 'image_path', 'trailer_url',
+        'start_date', 'end_date', 'ticket_price', 'is_active',
     ];
 
     protected $casts = [
@@ -32,18 +21,13 @@ class Event extends Model
     public function organizer()     { return $this->belongsTo(Organizer::class); }
     public function venue()         { return $this->belongsTo(Venue::class); }
     public function room()          { return $this->belongsTo(Room::class); }
-    
-    public function reservations() { return $this->hasMany(Reservation::class); }
-    
     public function eventType()     { return $this->belongsTo(EventType::class); }
-    public function showtimes()     { return $this->hasMany(Showtime::class); }
-    public function tickets() 
-    { 
-        return $this->hasMany(Ticket::class); 
-    }
+    public function reservations()  { return $this->hasMany(Reservation::class); }
+    public function tickets()       { return $this->hasMany(Ticket::class); }
+
     public function isCinema(): bool
     {
-        return $this->category === 'cinema';
+        return $this->eventType && $this->eventType->code === 'CIN';
     }
 
     public function isLibre(): bool

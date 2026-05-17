@@ -45,7 +45,7 @@
         </div>
 
         {{-- Type d’événement (rempli automatiquement depuis catégorie) --}}
-        <div class="mb-3">
+        <!-- <div class="mb-3">
             <label for="event_type_id" class="form-label">Type d'événement</label>
             <select id="event_type_id" name="event_type_id" class="form-select" required>
                 <option value="">-- Choisi automatiquement selon catégorie --</option>
@@ -53,7 +53,20 @@
                     <option value="{{ $type->id }}">{{ $type->label }}</option>
                 @endforeach
             </select>
+        </div> -->
+        <div class="mb-3">
+            <label for="event_type_id" class="form-label">Type d'événement</label>
+            <select id="event_type_id" name="event_type_id" class="form-select" required>
+                <option value="">-- Choisir un type --</option>
+                @foreach($eventTypes as $type)
+                <option value="{{ $type->id }}"
+                    {{ old('event_type_id') == $type->id ? 'selected' : '' }}>
+                    {{ $type->label }}
+                </option>
+        @endforeach
+            </select>
         </div>
+
 
         {{-- Organisateur --}}
         <div class="mb-3">

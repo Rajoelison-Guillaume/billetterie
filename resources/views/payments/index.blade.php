@@ -4,38 +4,15 @@
 <div class="container py-4">
     <h2 class="fw-bold text-primary mb-4">💳 Historique des paiements</h2>
 
-    {{-- Message de succès --}}
     @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    {{-- Message d'erreurs --}}
-    @if($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
     @if($payments->count() > 0)
         <div class="table-responsive">
             <table class="table table-striped table-dark align-middle">
                 <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Commande</th>
-                        <th>Montant</th>
-                        <th>Méthode</th>
-                        <th>Provider</th>
-                        <th>Référence</th>
-                        <th>Statut</th>
-                        <th>Date</th>
-                    </tr>
+                    <tr><th>#</th><th>Commande</th><th>Montant</th><th>Méthode</th><th>Référence</th><th>Statut</th><th>Date</th></tr>
                 </thead>
                 <tbody>
                     @foreach($payments as $payment)
@@ -44,7 +21,6 @@
                             <td>#{{ $payment->order->id }}</td>
                             <td>{{ number_format($payment->amount, 0, ',', ' ') }} Ar</td>
                             <td>{{ ucfirst($payment->method) }}</td>
-                            <td>{{ $payment->provider ?? '-' }}</td>
                             <td>{{ $payment->provider_ref ?? '-' }}</td>
                             <td>
                                 @if($payment->status === 'success' || $payment->status === 'paid')
@@ -61,13 +37,9 @@
                 </tbody>
             </table>
         </div>
-
-        {{-- Pagination --}}
-        <div class="mt-3">
-            {{ $payments->links() }}
-        </div>
+        {{ $payments->links() }}
     @else
-        <p class="text-muted">Aucun paiement enregistré pour le moment.</p>
+        <p class="text-muted">Aucun paiement enregistré.</p>
     @endif
 </div>
 @endsection

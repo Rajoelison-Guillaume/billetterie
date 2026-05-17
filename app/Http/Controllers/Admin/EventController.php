@@ -31,22 +31,39 @@ class EventController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'          => 'required|string|max:255',
-            'slug'           => 'required|string|unique:events,slug',
-            'category'       => 'required|string|in:cinema,concert,festival,libre',
-            'organizer_id'   => 'required|exists:organizers,id',
-            'venue_id'       => 'required|exists:venues,id',
-            'room_id'        => 'required|exists:rooms,id',
-            'event_type_id'  => 'required|exists:event_types,id',
-            'start_date'     => 'required|date|after_or_equal:now',
-            'end_date'       => 'required|date|after_or_equal:start_date',
-            'ticket_price'   => 'required|numeric|min:0',
-            'is_active'      => 'required|boolean',
-            'description'    => 'nullable|string',
-            'trailer_url'    => 'nullable|string|max:255',
+            'title'         => 'required|string|max:255',
+            'slug'          => 'required|string|unique:events,slug',
+            'organizer_id'  => 'required|exists:organizers,id',
+            'venue_id'      => 'required|exists:venues,id',
+            'room_id'       => 'required|exists:rooms,id',
+            'event_type_id' => 'required|exists:event_types,id',
+            'start_date'    => 'required|date|after_or_equal:now',
+            'end_date'      => 'required|date|after_or_equal:start_date',
+            'ticket_price'  => 'required|numeric|min:0',
+            'is_active'     => 'boolean',
+            'description'   => 'nullable|string',
+            'trailer_url'   => 'nullable|string|max:255',
         ]);
 
         Event::create($validated);
+
+        // $validated = $request->validate([
+        //     'title'          => 'required|string|max:255',
+        //     'slug'           => 'required|string|unique:events,slug',
+        //     'category'       => 'required|string|in:cinema,concert,festival,libre',
+        //     'organizer_id'   => 'required|exists:organizers,id',
+        //     'venue_id'       => 'required|exists:venues,id',
+        //     'room_id'        => 'required|exists:rooms,id',
+        //     'event_type_id'  => 'required|exists:event_types,id',
+        //     'start_date'     => 'required|date|after_or_equal:now',
+        //     'end_date'       => 'required|date|after_or_equal:start_date',
+        //     'ticket_price'   => 'required|numeric|min:0',
+        //     'is_active'      => 'required|boolean',
+        //     'description'    => 'nullable|string',
+        //     'trailer_url'    => 'nullable|string|max:255',
+        // ]);
+
+        // Event::create($validated);
 
         return redirect()->route('admin.events.index')->with('success', 'Événement créé avec succès.');
     }
@@ -76,7 +93,7 @@ class EventController extends Controller
         $validated = $request->validate([
             'title'          => 'required|string|max:255',
             'slug'           => 'required|string|unique:events,slug,' . $event->id,
-            'category'       => 'required|string|in:cinema,concert,festival,libre',
+            // 'category'       => 'required|string|in:cinema,concert,festival,libre',
             'organizer_id'   => 'required|exists:organizers,id',
             'venue_id'       => 'required|exists:venues,id',
             'room_id'        => 'required|exists:rooms,id',

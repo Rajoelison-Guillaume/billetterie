@@ -11,31 +11,42 @@
             @csrf
             @method('PUT')
 
+            {{-- Nom --}}
             <div class="mb-3">
                 <label for="name" class="form-label">Nom *</label>
-                <input type="text" name="name" id="name" class="form-control" required value="{{ old('name', $organizer->name) }}">
+                <input type="text" name="name" id="name" class="form-control" 
+                       required value="{{ old('name', $organizer->name) }}">
             </div>
 
+            {{-- Email --}}
             <div class="mb-3">
                 <label for="contact_email" class="form-label">Email</label>
-                <input type="email" name="contact_email" id="contact_email" class="form-control" value="{{ old('contact_email', $organizer->contact_email) }}">
+                <input type="email" name="contact_email" id="contact_email" class="form-control" 
+                       value="{{ old('contact_email', $organizer->contact_email) }}">
             </div>
 
+            {{-- Téléphone --}}
             <div class="mb-3">
                 <label for="contact_phone" class="form-label">Téléphone</label>
-                <input type="text" name="contact_phone" id="contact_phone" class="form-control" value="{{ old('contact_phone', $organizer->contact_phone) }}">
+                <input type="text" name="contact_phone" id="contact_phone" class="form-control" 
+                       value="{{ old('contact_phone', $organizer->contact_phone) }}">
             </div>
 
+            {{-- Description --}}
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
                 <textarea name="description" id="description" class="form-control">{{ old('description', $organizer->description) }}</textarea>
             </div>
 
+            {{-- Logo --}}
             <div class="mb-3">
                 <label for="logo" class="form-label">Logo</label>
                 @if($organizer->logo)
                     <div class="mb-2">
-                        <img src="{{ asset('storage/' . $organizer->logo) }}" alt="Logo actuel" class="img-fluid rounded shadow" style="max-height: 120px;">
+                        <img src="{{ Storage::url($organizer->logo) }}" 
+                             alt="Logo actuel de {{ $organizer->name }}" 
+                             class="img-fluid rounded shadow" 
+                             style="max-height: 120px;">
                     </div>
                 @endif
                 <input type="file" name="logo" id="logo" class="form-control">

@@ -1,5 +1,4 @@
-<?php
-
+<?php 
 namespace App\Http\Controllers;
 
 use App\Models\Event;
@@ -54,8 +53,15 @@ class HomeController extends Controller
         // Organisateurs en vedette
         $featuredOrganizers = Organizer::has('events')->take(3)->get();
 
-        // Section cinéma
-        $cinemaEvents = Event::where('category', 'cinema')->take(3)->get();
+        // Section cinéma (event_type code = CIN)
+        $cinemaEvents = Event::whereHas('eventType', function($q) {
+            $q->where('code', 'CIN');
+        })->take(3)->get();
+
+        // Section libre (event_type code = LIB)
+        $libreEvents = Event::whereHas('eventType', function($q) {
+            $q->where('code', 'LIB');
+        })->take(3)->get();
 
         // Graphiques
         $reservationsByMonth = ReservationSeat::selectRaw('MONTH(reserved_at) as month, COUNT(*) as count')
@@ -64,8 +70,8 @@ class HomeController extends Controller
         $ticketsByMonth = Ticket::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
             ->groupBy('month')->pluck('count','month');
 
-        $eventTypes = Event::selectRaw('category, COUNT(*) as count')
-            ->groupBy('category')->pluck('count','category');
+        $eventTypes = Event::selectRaw('event_type_id, COUNT(*) as count')
+            ->groupBy('event_type_id')->pluck('count','event_type_id');
 
         return view('dashboard', compact(
             'eventsCount',
@@ -78,6 +84,7 @@ class HomeController extends Controller
             'availableEvents',
             'featuredOrganizers',
             'cinemaEvents',
+            'libreEvents',
             'reservationsByMonth',
             'ticketsByMonth',
             'eventTypes'

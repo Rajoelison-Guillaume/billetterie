@@ -110,7 +110,7 @@ public function exportPdf(Request $request)
         $query->where('id', $request->id);
     }
     if ($request->filled('qr_code')) {
-        $query->whereHas('tickets', fn($q) => $q->where('qr_code', $request->qr));
+        $query->whereHas('tickets', fn($q) => $q->where('qr_code', $request->qr_code));
     }
     if ($request->filled('event')) {
         $query->whereHas('tickets.event', fn($q) => $q->where('title', 'like', '%' . $request->event . '%'));

@@ -40,7 +40,7 @@ class Seat extends Model
 public function reservations()
 {
     return $this->belongsToMany(Reservation::class, 'reservation_seat')
-                ->withPivot('showtime_id','ticket_id','reserved_at')
+                ->withPivot('ticket_id','reserved_at')
                 ->withTimestamps();
 }
 

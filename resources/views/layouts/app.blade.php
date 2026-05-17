@@ -16,6 +16,9 @@
 
     <!-- AOS Animations -->
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+
+    {{-- Styles spécifiques aux vues --}}
+    @yield('styles')
 </head>
 <body>
     <!-- Navigation -->        
@@ -39,19 +42,20 @@
     <!-- Footer -->
     <footer class="footer bg-light py-3 text-center">
         <p class="mb-2">&copy; {{ date('Y') }} Billetterie Madagascar - Tous droits réservés</p>
-            <div class="footer-social">
-                <a href="#" class="me-3"><i class="bi bi-facebook"></i></a>
-                <a href="#" class="me-3"><i class="bi bi-twitter"></i></a>
-                <a href="#"><i class="bi bi-instagram"></i></a>
-            </div>
+        <div class="footer-social">
+            <a href="#" class="me-3"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="me-3"><i class="bi bi-twitter"></i></a>
+            <a href="#"><i class="bi bi-instagram"></i></a>
+        </div>
     </footer>
 
-
-    <!-- Scripts -->
-
+    <!-- Scripts globaux -->
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>AOS.init();</script>
+
+    {{-- Scripts spécifiques aux vues --}}
+    @yield('scripts')
 </body>
 </html>

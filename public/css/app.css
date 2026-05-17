@@ -50,7 +50,7 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 8px 25px rgba(37,99,235,0.2); border-radius: 12px;
 }
 .dropdown-item { color: #1e293b; }
-.dropdown-item:hover { background: rgba(59,130,246,0.1); color: #1e40af; }
+.dropdown-item:hover { background: #3b82f6; color: #1e40af; }
 
 /* ===== Hero ===== */
 .hero {
@@ -153,7 +153,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 .table-striped tbody tr:nth-of-type(odd) { background: rgba(59,130,246,0.03); }
 .table-admin {
-    background: #1e293b; color: #f1f5f9; box-shadow: 0 8px 32px rgba(37,99,235,0.3);
+    background: #92a1b8; color: #f1f5f9; box-shadow: 0 8px 32px rgba(37,99,235,0.3);
 }
 .table-admin thead th {
     background: linear-gradient(90deg, #3b82f6, #1e40af); color: white !important;
@@ -225,3 +225,12 @@ body.admin .table-admin thead th { background: linear-gradient(90deg, #3b82f6, #
 @media (max-width: 992px) { .hero { padding: 100px 20px; } .hero h1 { font-size: 2.8rem; } }
 @media (max-width: 768px) { .hero { padding: 80px 15px; } .btn, .stats-card h2 { font-size: 0.95rem; } }
 @media (max-width: 576px) { .hero h1 { font-size: 2rem; } .card-body { padding: 1.5rem; } }
+
+
+
+/* .nav-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    vertical-align: middle;
+} */

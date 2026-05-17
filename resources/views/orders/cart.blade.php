@@ -8,25 +8,13 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    @if($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
     @if($activeOrder && $activeOrder->tickets->count())
         @foreach($activeOrder->tickets->groupBy('event_id') as $eventId => $tickets)
-            @php
-                $event = $tickets->first()->event;
-                $total = $tickets->sum('price');
-            @endphp
+            @php $event = $tickets->first()->event; $total = $tickets->sum('price'); @endphp
             <div class="card mb-3 bg-dark text-light">
                 <div class="card-header">
-                    {{ $event->title }} <span class="badge bg-info">{{ $event->category }}</span>
+                    {{ $event->title }}
+                    <span class="badge bg-info">{{ $event->eventType->label ?? ($event->isCinema() ? 'Cinéma' : 'Libre') }}</span>
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
@@ -35,21 +23,19 @@
                                 🎫 {{ $ticket->event->title }} — {{ number_format($ticket->price, 0, ',', ' ') }} Ar
                                 @if($ticket->seat)
                                     <br><small>🪑 Place : {{ $ticket->seat->row_label }}{{ $ticket->seat->seat_number }}</small>
+                                @else
+                                    <br><small>🎟️ Billet libre (sans siège)</small>
                                 @endif
-                                <br><small class="d-block">🔗 QR Code : {{ $ticket->qr_code }}</small>
+                                <br><small class="d-block">🔗 QR : {{ $ticket->qr_code }}</small>
                             </li>
                         @endforeach
                     </ul>
-                    <div class="mt-3">
-                        <strong>Total pour {{ $event->title }} :</strong> {{ number_format($total, 0, ',', ' ') }} Ar
-                    </div>
+                    <div class="mt-3"><strong>Total :</strong> {{ number_format($total, 0, ',', ' ') }} Ar</div>
                 </div>
             </div>
         @endforeach
-
-        <div class="alert alert-info fw-bold">
-            Total panier : {{ number_format($activeOrder->total_amount, 0, ',', ' ') }} Ar
-        </div>
+        <div class="alert alert-info fw-bold">Total panier : {{ number_format($activeOrder->total_amount, 0, ',', ' ') }} Ar</div>
+        <div class="text-end"><a href="{{ route('checkout.show') }}" class="btn btn-success">Procéder au paiement</a></div>
     @else
         <p class="text-muted">Votre panier est vide.</p>
     @endif
@@ -57,9 +43,7 @@
     <h3 class="mt-5">Historique de vos commandes</h3>
     @forelse($pastOrders as $order)
         <div class="card mb-3">
-            <div class="card-header">
-                Commande #{{ $order->id }} — {{ $order->created_at->format('d/m/Y H:i') }}
-            </div>
+            <div class="card-header">Commande #{{ $order->id }} — {{ $order->created_at->format('d/m/Y H:i') }}</div>
             <div class="card-body">
                 <ul class="list-group">
                     @foreach($order->tickets as $ticket)
@@ -68,13 +52,10 @@
                             @if($ticket->seat)
                                 <br><small>🪑 Place : {{ $ticket->seat->row_label }}{{ $ticket->seat->seat_number }}</small>
                             @endif
-                            <br><small class="d-block">🔗 QR Code : {{ $ticket->qr_code }}</small>
                         </li>
                     @endforeach
                 </ul>
-                <div class="mt-3">
-                    <strong>Total :</strong> {{ number_format($order->total_amount, 0, ',', ' ') }} Ar
-                </div>
+                <div class="mt-3"><strong>Total :</strong> {{ number_format($order->total_amount, 0, ',', ' ') }} Ar</div>
                 <div><strong>Statut :</strong> {{ ucfirst($order->status) }}</div>
             </div>
         </div>

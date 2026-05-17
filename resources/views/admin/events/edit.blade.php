@@ -21,31 +21,21 @@
         {{-- Titre + Slug --}}
         <div class="mb-3">
             <label for="title" class="form-label">Titre</label>
-            <input type="text" id="title" name="title" class="form-control" 
+            <input type="text" id="title" name="title" class="form-control"
                    value="{{ old('title', $event->title) }}" required>
         </div>
 
         <div class="mb-3">
             <label for="slug" class="form-label">Slug</label>
-            <input type="text" id="slug" name="slug" class="form-control" 
+            <input type="text" id="slug" name="slug" class="form-control"
                    value="{{ old('slug', $event->slug) }}" readonly>
         </div>
 
-        {{-- Catégorie --}}
-        <div class="mb-3">
-            <label for="category" class="form-label">Catégorie</label>
-            <select id="category" name="category" class="form-select" required>
-                <option value="cinema" {{ old('category', $event->category) == 'cinema' ? 'selected' : '' }}>Cinéma</option>
-                <option value="concert" {{ old('category', $event->category) == 'concert' ? 'selected' : '' }}>Concert</option>
-                <option value="festival" {{ old('category', $event->category) == 'festival' ? 'selected' : '' }}>Festival</option>
-                <option value="libre" {{ old('category', $event->category) == 'libre' ? 'selected' : '' }}>Libre</option>
-            </select>
-        </div>
-
-        {{-- Type d’événement (lié à catégorie) --}}
+        {{-- Type d’événement --}}
         <div class="mb-3">
             <label for="event_type_id" class="form-label">Type d'événement</label>
             <select id="event_type_id" name="event_type_id" class="form-select" required>
+                <option value="">-- Choisir un type --</option>
                 @foreach($eventTypes as $type)
                     <option value="{{ $type->id }}" 
                         {{ old('event_type_id', $event->event_type_id) == $type->id ? 'selected' : '' }}>
@@ -72,7 +62,7 @@
         {{-- Lieu --}}
         <div class="mb-3">
             <label for="venue_id" class="form-label">Lieu</label>
-            <select name="venue_id" class="form-select" required>
+            <select id="venue_id" name="venue_id" class="form-select" required>
                 <option value="">-- Choisir un lieu --</option>
                 @foreach($venues as $venue)
                     <option value="{{ $venue->id }}" 
@@ -86,9 +76,10 @@
         {{-- Salle --}}
         <div class="mb-3">
             <label for="room_id" class="form-label">Salle</label>
-            <select name="room_id" class="form-select" required>
+            <select id="room_id" name="room_id" class="form-select" required>
+                <option value="">-- Choisir une salle --</option>
                 @foreach($rooms as $room)
-                    <option value="{{ $room->id }}" 
+                    <option value="{{ $room->id }}" data-venue="{{ $room->venue_id }}"
                         {{ old('room_id', $event->room_id) == $room->id ? 'selected' : '' }}>
                         {{ $room->name }}
                     </option>
@@ -99,26 +90,26 @@
         {{-- Dates --}}
         <div class="mb-3">
             <label for="start_date" class="form-label">Date début</label>
-            <input type="datetime-local" name="start_date" class="form-control" 
-                   value="{{ old('start_date', $event->start_date) }}" required>
+            <input type="datetime-local" name="start_date" class="form-control"
+                   value="{{ old('start_date', \Carbon\Carbon::parse($event->start_date)->format('Y-m-d\TH:i')) }}" required>
         </div>
 
         <div class="mb-3">
             <label for="end_date" class="form-label">Date fin</label>
-            <input type="datetime-local" name="end_date" class="form-control" 
-                   value="{{ old('end_date', $event->end_date) }}" required>
+            <input type="datetime-local" name="end_date" class="form-control"
+                   value="{{ old('end_date', \Carbon\Carbon::parse($event->end_date)->format('Y-m-d\TH:i')) }}" required>
         </div>
 
         {{-- Prix --}}
         <div class="mb-3">
             <label for="ticket_price" class="form-label">Prix du billet</label>
-            <input type="number" name="ticket_price" class="form-control" 
-                   value="{{ old('ticket_price', $event->ticket_price) }}" required>
+            <input type="number" name="ticket_price" class="form-control"
+                   value="{{ old('ticket_price', $event->ticket_price) }}" min="0" step="100" required>
         </div>
 
         {{-- Actif --}}
         <div class="mb-3 form-check">
-            <input type="checkbox" name="is_active" value="1" class="form-check-input" 
+            <input type="checkbox" name="is_active" value="1" class="form-check-input"
                    {{ old('is_active', $event->is_active) ? 'checked' : '' }}>
             <label class="form-check-label">Activer l'événement</label>
         </div>
@@ -131,37 +122,13 @@
 
         {{-- Trailer --}}
         <div class="mb-3">
-            <label for="trailer_url" class="form-label">Lien du trailer (YouTube, Vimeo...)</label>
+            <label for="trailer_url" class="form-label">Lien du trailer</label>
             <input type="url" name="trailer_url" class="form-control" 
                    value="{{ old('trailer_url', $event->trailer_url) }}">
         </div>
 
-        <button type="submit" class="btn btn-primary">Mettre à jour</button>
+        <button type="submit" class="btn btn-warning">Mettre à jour</button>
         <a href="{{ route('admin.events.index') }}" class="btn btn-secondary">Retour</a>
     </form>
 </div>
-@endsection
-
-@section('scripts')
-<script>
-    // Slug auto-généré
-    document.getElementById('title').addEventListener('input', function () {
-        const slug = this.value.toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-') 
-            .replace(/^-+|-+$/g, '');
-        document.getElementById('slug').value = slug;
-    });
-
-    // Synchronisation catégorie → type d'événement
-    document.getElementById('category').addEventListener('change', function () {
-        const selected = this.value.toLowerCase();
-        const typeSelect = document.getElementById('event_type_id');
-        for (let option of typeSelect.options) {
-            if (option.text.toLowerCase().includes(selected)) {
-                typeSelect.value = option.value;
-                break;
-            }
-        }
-    });
-</script>
 @endsection

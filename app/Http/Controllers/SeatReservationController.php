@@ -2,43 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SeatReservation;
+use App\Models\Reservation;
+use App\Models\ReservationSeat;
 use App\Models\Ticket;
 use App\Models\Order;
-use App\Models\Showtime;
+use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\DB;
 
 class SeatReservationController extends Controller
 {
-    /** Affiche toutes les réservations (admin uniquement) */
-    public function index()
+    public function seats($eventId)
     {
-        $this->authorize('is_admin'); // middleware ou policy
-        $reservations = SeatReservation::with(['showtime','seat','ticket'])->paginate(15);
-        return view('reservations.index', compact('reservations'));
+        $event = Event::with('room.seats')->findOrFail($eventId);
+        if (!$event->isCinema() || !$event->room) {
+            abort(404, 'Événement non cinéma ou sans salle.');
+        }
+        $reservedSeats = ReservationSeat::whereHas('reservation', fn($q) => $q->where('event_id', $eventId))
+            ->pluck('seat_id')
+            ->toArray();
+
+        return view('reservations.seats', compact('event', 'reservedSeats'));
     }
 
-    /** Affiche une réservation spécifique (admin uniquement) */
-    public function show($id)
-    {
-        $this->authorize('is_admin');
-        $reservation = SeatReservation::with(['showtime','seat','ticket'])->findOrFail($id);
-        return view('reservations.show', compact('reservation'));
-    }
-
-    /** Affiche les sièges disponibles pour une séance (client) */
-    public function seats($showtimeId)
-    {
-        $showtime = Showtime::with('room.seats')->findOrFail($showtimeId);
-        $reservedSeats = SeatReservation::where('showtime_id', $showtimeId)->pluck('seat_id')->toArray();
-
-        return view('reservations.seats', compact('showtime', 'reservedSeats'));
-    }
-
-    /** Réserver une ou plusieurs places et générer les billets (client) */
-    public function reserve(Request $request, $showtimeId)
+    public function reserve(Request $request, $eventId)
     {
         $request->validate([
             'seat_id' => 'required|array',
@@ -46,10 +34,12 @@ class SeatReservationController extends Controller
         ]);
 
         $user = Auth::user();
-        $showtime = Showtime::with('event')->findOrFail($showtimeId);
+        $event = Event::findOrFail($eventId);
+        if (!$event->isCinema()) {
+            return back()->withErrors(['error' => 'Réservation de sièges réservée aux événements cinéma.']);
+        }
 
-        // Créer ou récupérer la commande active (panier)
-        $order = $user->orders()->where('status','pending')->first();
+        $order = $user->orders()->where('status', 'pending')->first();
         if (!$order) {
             $order = Order::create([
                 'user_id' => $user->id,
@@ -58,40 +48,45 @@ class SeatReservationController extends Controller
             ]);
         }
 
-        $total = 0;
-
-        foreach ($request->seat_id as $seatId) {
-            // Vérifier si la place est déjà réservée
-            if (SeatReservation::where('showtime_id',$showtimeId)->where('seat_id',$seatId)->exists()) {
-                continue; // ignorer les places déjà prises
-            }
-
-            // Créer le billet
-            $ticket = Ticket::create([
-                'order_id'    => $order->id,
-                'event_id'    => $showtime->event_id,
-                'showtime_id' => $showtime->id,
-                'seat_id'     => $seatId,
-                'price'       => $showtime->price,
-                'qr_code'     => uniqid('QR-'),
-                'status'      => 'unpaid',
-            ]);
-
-            // Créer la réservation de siège
-            SeatReservation::create([
-                'seat_id'     => $seatId,
-                'showtime_id' => $showtimeId,
-                'ticket_id'   => $ticket->id,
+        DB::transaction(function () use ($request, $user, $event, $order) {
+            $reservation = Reservation::create([
+                'user_id'     => $user->id,
+                'event_id'    => $event->id,
+                'room_id'     => $event->room_id,
+                'quantity'    => count($request->seat_id),
+                'status'      => 'pending',
                 'reserved_at' => now(),
             ]);
 
-            $total += $ticket->price;
-        }
+            $total = 0;
+            foreach ($request->seat_id as $seatId) {
+                $already = ReservationSeat::whereHas('reservation', fn($q) => $q->where('event_id', $event->id))
+                            ->where('seat_id', $seatId)->exists();
+                if ($already) continue;
 
-        // Mettre à jour le total de la commande
-        $order->total_amount += $total;
-        $order->save();
+                $ticket = Ticket::create([
+                    'order_id' => $order->id,
+                    'event_id' => $event->id,
+                    'seat_id'  => $seatId,
+                    'price'    => $event->ticket_price,
+                    'qr_code'  => uniqid('QR-'),
+                    'status'   => 'unpaid',
+                ]);
 
-        return redirect()->route('orders.cart')->with('success','Places réservées et ajoutées au panier !');
+                ReservationSeat::create([
+                    'reservation_id' => $reservation->id,
+                    'seat_id'        => $seatId,
+                    'ticket_id'      => $ticket->id,
+                    'reserved_at'    => now(),
+                ]);
+
+                $total += $ticket->price;
+            }
+
+            $order->total_amount += $total;
+            $order->save();
+        });
+
+        return redirect()->route('orders.cart')->with('success', 'Places réservées et ajoutées au panier.');
     }
 }

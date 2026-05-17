@@ -4,28 +4,12 @@
 <div class="container py-4">
     <h2 class="text-primary fw-bold mb-4">{{ $event->title }}</h2>
 
-    {{-- Messages --}}
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-    @if($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    {{-- Infos de l'événement --}}
     <p class="lead text-light">{{ $event->description }}</p>
     <p><strong>Organisateur :</strong> {{ $event->organizer->name }}</p>
     <p><strong>Lieu :</strong> {{ $event->venue->name ?? 'Non défini' }}</p>
-    <p><strong>Date :</strong> {{ $event->start_date->format('d/m/Y') }} - {{ $event->end_date->format('d/m/Y') }}</p>
+    <p><strong>Date :</strong> {{ $event->start_date->format('d/m/Y H:i') }} - {{ $event->end_date->format('d/m/Y H:i') }}</p>
     <p><strong>Prix :</strong> {{ number_format($event->ticket_price, 0, ',', ' ') }} Ar</p>
 
-    {{-- Trailer vidéo --}}
     @if($event->trailer_url)
         @php
             $embedUrl = \Illuminate\Support\Str::contains($event->trailer_url, 'youtube.com/watch')
@@ -37,38 +21,27 @@
         </div>
     @endif
 
-    {{-- Séances cinéma --}}
-    @if($event->isCinema())
-        <h4 class="text-light mt-4">🎬 Séances disponibles</h4>
-        @forelse($event->showtimes as $showtime)
-            <div class="card mb-3">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>{{ $showtime->start_at->format('d/m/Y H:i') }}</strong> — {{ $showtime->room->name }}
-                    </div>
-                    <a href="{{ route('showtimes.show', $showtime->id) }}" class="btn btn-sm btn-info text-dark">Réserver</a>
-                </div>
-            </div>
-        @empty
-            <p class="text-warning">Aucune séance disponible pour cet événement.</p>
-        @endforelse
-    @endif
-
-    {{-- Formulaire de réservation --}}
     <form action="{{ route('events.reserve', $event->id) }}" method="POST" class="mt-4">
         @csrf
-        <div class="mb-3" id="providerField">
+        <div class="mb-3">
             <label class="form-label text-light">Mode de paiement</label>
             <select name="method" class="form-select" required>
-                <option value="mobile_money">mobile_money</option>
+                <option value="mvola">Mvola</option>
+                <option value="orange_money">Orange Money</option>
+                <option value="airtel_money">Airtel Money</option>
                 <option value="cash">Cash</option>
             </select>
         </div>
 
         @if($event->isCinema())
             <div class="mb-3">
-                <label class="form-label text-light">Numéro de place</label>
-                <input type="text" name="seats" class="form-control" value="{{ request('seats') }}" readonly required>
+                <label class="form-label text-light">Places sélectionnées</label>
+                <input type="text" name="seats" id="seatsInput" class="form-control" readonly required>
+            </div>
+        @else
+            <div class="mb-3">
+                <label class="form-label text-light">Quantité de billets</label>
+                <input type="number" name="quantity" class="form-control" min="1" value="1" required>
             </div>
         @endif
 
@@ -81,173 +54,117 @@
     </form>
 </div>
 
-{{-- Disposition des sièges uniquement pour cinéma --}}
 @if($event->isCinema())
     <h1 class="mt-5">Disposition des sièges 🎬</h1>
     <div class="screen">ÉCRAN GÉANT</div>
     <div class="cinema" id="cinema"></div>
-    <div class="legend mt-4">
-    <h5 class="text-light">Légende des sièges</h5>
-    <ul class="list-unstyled d-flex gap-4">
-        <li>
-            <span class="legend-box free"></span> Libre
-        </li>
-        <li>
-            <span class="legend-box selected"></span> Sélectionné
-        </li>
-        <li>
-            <span class="legend-box reserved"></span> Occupé
-        </li>
-    </ul>
-</div>
 
-    <div id="info" class="mt-4">
-        <strong>Sièges sélectionnés :</strong>
-        <ul id="selectedSeats"></ul>
-    </div>
-    <button id="validateSeats" class="btn btn-success mt-3">Valider les sièges</button>
-
-    @if($reservedSeats->count())
-    <div class="mt-4">
-        <h4 class="text-light">🪑 Places déjà réservées</h4>
-
-        <ul>
-            @foreach($reservedSeats as $seat)
-                <li>{{ $seat }}</li>
-            @endforeach
-        </ul>
-    </div>
-@else
-    <p class="text-success mt-4">Aucune place réservée.</p>
+    <h3 class="mt-4 text-light">Sièges sélectionnés :</h3>
+    <ul id="selectedSeats"></ul>
 @endif
+@endsection
+
+@section('styles')
 <style>
-.legend-box {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
-  margin-right: 8px;
-  border: 2px solid #333;
-}
-
-.legend-box.free { background: limegreen; }
-.legend-box.selected { background: crimson; }
-.legend-box.reserved { background: gray; }
-
-
-.cinema { 
-  position: relative; 
-  width: 100%; 
-  min-height: 600px; 
-  margin-top: 30px; 
-}
-
-.seat { 
-  width: 22px; 
-  height: 22px; 
-  border-radius: 50%; 
-  position: absolute; 
-  border: 2px solid #333; 
-  appearance: none; /* supprime le style natif */ 
-  -webkit-appearance: none; 
-  cursor: pointer;
-}
-
-.seat.free { background: limegreen; }     /* disponible */
-.seat.selected { background: crimson; }   /* sélectionné */
-.seat.reserved { background: gray; }      /* occupé */
-.seat:hover:not(:disabled) { background: gold; cursor: pointer; }
-
-.screen { 
-  width: 60%; 
-  height: 30px; 
-  background: silver; 
-  margin: 0 auto; 
-  border-radius: 5px; 
-  text-align: center; 
-  line-height: 30px; 
-  font-weight: bold; 
-}
-
+    body { background:#111; color:#fff; }
+    .cinema { position:relative; width:100%; height:600px; margin-top:30px; }
+    .seat {
+        appearance:none; -webkit-appearance:none;
+        width:22px; height:22px;
+        background:crimson; border-radius:50%;
+        position:absolute; transition:0.3s; border:2px solid #333;
+    }
+    .seat:hover { background:gold; cursor:pointer; }
+    .seat:checked { background:limegreen; }
+    .seat.reserved { background:gray; cursor:not-allowed; }
+    .screen {
+        width:60%; height:30px; background:silver;
+        margin:0 auto; border-radius:5px;
+        line-height:30px; font-weight:bold;
+    }
 </style>
+@endsection
 
-    <script>
-  const cinema = document.getElementById("cinema");
-  const selectedSeatsList = document.getElementById("selectedSeats");
-  const validateBtn = document.getElementById("validateSeats");
-  const seatsInput = document.querySelector("input[name='seats']");
-  let selectedSeats = [];
+@section('scripts')
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const cinema = document.getElementById("cinema");
+    const selectedSeatsList = document.getElementById("selectedSeats");
+    const seatsInput = document.getElementById("seatsInput");
+    let selectedSeats = [];
 
-  // Liste des sièges réservés envoyée par Laravel
-  const reservedSeats = @json($reservedSeats);
+    // Données envoyées par Laravel
+    const seatsData = @json($event->room->seats->map(fn($s) => [
+        'id' => $s->id,
+        'row_label' => $s->row_label,
+        'seat_number' => $s->seat_number
+    ]));
 
-  function updateList(seat) {
-    const seatId = seat.id;
-    if (seat.checked) {
-      if (!selectedSeats.includes(seatId)) {
-        selectedSeats.push(seatId);
-        const li = document.createElement("li");
-        li.textContent = seatId;
-        li.id = "li-" + seatId;
-        selectedSeatsList.appendChild(li);
-      }
-    } else {
-      selectedSeats = selectedSeats.filter(id => id !== seatId);
-      const liToRemove = document.getElementById("li-" + seatId);
-      if (liToRemove) selectedSeatsList.removeChild(liToRemove);
+    const reservedSeatIds = @json($reservedSeatIds); // liste des seat_id déjà pris
+
+    const niveaux = 10;
+    const baseSeats = 30;
+    const increment = 2;
+    const centerX = window.innerWidth / 2;
+    const centerY = 650;
+    const arcAngle = 0.35 * 2 * Math.PI;
+    const seatSpacing = 1.2;
+
+    let seatIndex = 0;
+
+    for (let n = 0; n < niveaux; n++) {
+        const seatsCount = baseSeats + (n * increment);
+        const radius = 180 + (n * 45);
+        const angleStep = (arcAngle * seatSpacing) / (seatsCount - 1);
+        const startAngle = Math.PI/2 - (arcAngle * seatSpacing)/2;
+
+        for (let s = 0; s < seatsCount; s++) {
+            if (seatIndex >= seatsData.length) break;
+
+            const seatInfo = seatsData[seatIndex];
+            const seat = document.createElement("input");
+            seat.type = "checkbox";
+            seat.classList.add("seat");
+            seat.dataset.seatId = seatInfo.id;
+            seat.title = `Row ${seatInfo.row_label} - Seat ${seatInfo.seat_number}`;
+
+            const angle = startAngle + (s * angleStep);
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY - radius * Math.sin(angle);
+
+            seat.style.left = (x - 11) + "px";
+            seat.style.top = (y - 11) + "px";
+
+            if (reservedSeatIds.includes(seatInfo.id)) {
+                seat.disabled = true;
+                seat.checked = true;
+                seat.classList.add("reserved");
+            } else {
+                seat.addEventListener("change", () => {
+                    const seatId = seat.dataset.seatId;
+                    if (seat.checked) {
+                        selectedSeats.push(seatId);
+                        const li = document.createElement("li");
+                        li.textContent = `Seat ${seatInfo.row_label}-${seatInfo.seat_number}`;
+                        li.id = "li-" + seatId;
+                        selectedSeatsList.appendChild(li);
+                    } else {
+                        selectedSeats = selectedSeats.filter(id => id !== seatId);
+                        document.getElementById("li-" + seatId)?.remove();
+                    }
+                    seatsInput.value = selectedSeats.join(",");
+                });
+            }
+            cinema.appendChild(seat);
+            seatIndex++;
+        }
     }
-  }
-
-  validateBtn.addEventListener("click", () => {
-    if (selectedSeats.length === 0) {
-      alert("Veuillez sélectionner au moins un siège !");
-      return;
-    }
-    seatsInput.value = selectedSeats.join(",");
-  });
-
-  const niveaux = 10, baseSeats = 30, increment = 2;
-  const centerX = cinema.offsetWidth / 2, centerY = 600;
-  const arcAngle = 0.35 * 2 * Math.PI, seatSpacing = 1.2;
-
-  for (let n = 0; n < niveaux; n++) {
-    const seatsCount = baseSeats + (n * increment);
-    const radius = 180 + (n * 45);
-    const angleStep = (arcAngle * seatSpacing) / (seatsCount - 1);
-    const startAngle = Math.PI/2 - (arcAngle * seatSpacing)/2;
-
-    for (let s = 0; s < seatsCount; s++) {
-      const seat = document.createElement("input");
-      seat.type = "checkbox";
-      seat.classList.add("seat");
-      seat.id = `seat-${n + 1}-${s + 1}`;
-
-      const angle = startAngle + (s * angleStep);
-      const x = centerX + radius * Math.cos(angle);
-      const y = centerY - radius * Math.sin(angle);
-
-      seat.style.left = (x - 11) + "px";
-      seat.style.top = (y - 11) + "px";
-
-      // ✅ Si le siège est réservé, on le coche et on le bloque
-      if (reservedSeats.includes(seat.id)) {
-        seat.checked = true;
-        seat.disabled = true;
-        seat.classList.add("reserved");
-      } else {
-        seat.classList.add("free");
-        seat.addEventListener("change", () => {
-          seat.classList.toggle("selected", seat.checked);
-          updateList(seat);
-        });
-      }
-
-      cinema.appendChild(seat);
-    }
-  }
+});
 </script>
 
-
-
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>@foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach</ul>
+    </div>
 @endif
 @endsection

@@ -8,7 +8,8 @@
             <div class="card-body">
                 <h5 class="card-title">📌 Informations générales</h5>
                 <p><strong>Slug :</strong> {{ $event->slug }}</p>
-                <p><strong>Catégorie :</strong> {{ ucfirst($event->category) }}</p>
+                <!-- <p><strong>Catégorie :</strong> {{ $event->eventType?->label ?? 'Non défini' }}</p> -->
+
                 <p><strong>Type d'événement :</strong> {{ $event->eventType?->label ?? 'Non défini' }}</p>
                 <p><strong>Organisateur :</strong> {{ $event->organizer?->name ?? 'Non défini' }}</p>
                 <p><strong>Lieu :</strong> {{ $event->venue?->name ?? 'Non défini' }}</p>

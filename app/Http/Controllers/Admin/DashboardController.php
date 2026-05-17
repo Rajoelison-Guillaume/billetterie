@@ -9,7 +9,6 @@ use App\Models\Ticket;
 use App\Models\ReservationSeat;
 use App\Models\Venue;
 use App\Models\EventType;
-use App\Models\Showtime;
 
 class DashboardController extends Controller
 {
@@ -27,13 +26,19 @@ class DashboardController extends Controller
         $totalReservedSeats = ReservationSeat::count();
         $totalRevenue       = Ticket::sum('price');
 
-        $showtimes = Showtime::with('room.seats')->get();
+        // ⚡ Calcul du taux d’occupation basé sur Event et Reservation
+        $events = Event::with('room.seats', 'eventType')->get();
         $occupancyRates = [];
 
-        foreach ($showtimes as $showtime) {
-            $totalSeats    = $showtime->room->seats->count();
-            $reservedSeats = ReservationSeat::where('showtime_id', $showtime->id)->count();
-            $rate          = $totalSeats > 0 ? ($reservedSeats / $totalSeats) * 100 : 0;
+        foreach ($events as $event) {
+            $totalSeats = $event->room ? $event->room->seats->count() : 0;
+
+            // On filtre via la relation Reservation → event_id
+            $reservedSeats = ReservationSeat::whereHas('reservation', function ($q) use ($event) {
+                $q->where('event_id', $event->id);
+            })->count();
+
+            $rate = $totalSeats > 0 ? ($reservedSeats / $totalSeats) * 100 : 0;
             $occupancyRates[] = $rate;
         }
 
@@ -49,11 +54,10 @@ class DashboardController extends Controller
 
         $eventsByVenue = Venue::withCount('events')->get();
 
-        
         // ⚡ Récupérer les types d’événements avec leur nombre d'événements
         $eventsByType = EventType::withCount('events')->get();
 
-        // ✅ Revenus par mois
+        // Revenus par mois
         $revenueByMonth = Ticket::selectRaw('MONTH(created_at) as month, SUM(price) as total')
             ->groupBy('month')
             ->orderBy('month')
@@ -96,11 +100,11 @@ class DashboardController extends Controller
 
         // ⚡ Filtrer les types null
         $eventsByType = EventType::withCount('events')
-            ->whereNotNull('name')
+            ->whereNotNull('label')
             ->get()
             ->map(function ($type) {
                 return [
-                    'name'  => $type->name,
+                    'label' => $type->label,
                     'count' => $type->events_count
                 ];
             });
@@ -117,13 +121,17 @@ class DashboardController extends Controller
 
     private function calculateAverageOccupancy()
     {
-        $showtimes = Showtime::with('room.seats')->get();
+        $events = Event::with('room.seats')->get();
         $occupancyRates = [];
 
-        foreach ($showtimes as $showtime) {
-            $totalSeats    = $showtime->room->seats->count();
-            $reservedSeats = ReservationSeat::where('showtime_id', $showtime->id)->count();
-            $rate          = $totalSeats > 0 ? ($reservedSeats / $totalSeats) * 100 : 0;
+        foreach ($events as $event) {
+            $totalSeats = $event->room ? $event->room->seats->count() : 0;
+
+            $reservedSeats = ReservationSeat::whereHas('reservation', function ($q) use ($event) {
+                $q->where('event_id', $event->id);
+            })->count();
+
+            $rate = $totalSeats > 0 ? ($reservedSeats / $totalSeats) * 100 : 0;
             $occupancyRates[] = $rate;
         }
 

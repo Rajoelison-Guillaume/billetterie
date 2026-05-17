@@ -10,7 +10,7 @@
                 Réservation #{{ $reservation->id }} — {{ $reservation->event->title }}
             </div>
             <div class="card-body">
-                <p><strong>Date :</strong> {{ $reservation->event->start_date->format('d/m/Y') }}</p>
+                <p><strong>Date :</strong> {{ $reservation->event->start_date->format('d/m/Y H:i') }}</p>
                 <p><strong>Lieu :</strong> {{ $reservation->event->venue->name ?? 'Non défini' }}</p>
                 <p><strong>Statut :</strong> 
                     <span class="badge bg-{{ $reservation->status === 'confirmée' ? 'success' : 'danger' }}">
@@ -18,34 +18,39 @@
                     </span>
                 </p>
 
-                {{-- Mes sièges réservés --}}
+                {{-- Si événement cinéma : afficher les sièges réservés --}}
                 @if($reservation->event->isCinema())
                     <h5 class="mt-4 text-info">🪑 Mes sièges réservés</h5>
-                    @if($reservation->seats)
+                    @php
+                        $seatsList = $reservation->reservationSeats->map(fn($rs) => $rs->seat->label())->toArray();
+                    @endphp
+                    @if(count($seatsList))
                         <ul class="list-group">
-                            @foreach(explode(',', $reservation->seats) as $seat)
-                                <li class="list-group-item bg-dark text-light fw-bold text-neon">{{ $seat }}</li>
+                            @foreach($seatsList as $seatLabel)
+                                <li class="list-group-item bg-dark text-light fw-bold text-neon">{{ $seatLabel }}</li>
                             @endforeach
                         </ul>
                     @else
                         <p class="text-warning">Aucun siège réservé.</p>
                     @endif
                 @else
-                    <p><strong>Détails :</strong> Réservation simple sans choix de place.</p>
+                    <p><strong>Détails :</strong> Réservation simple sans choix de place ({{ $reservation->quantity }} billet(s)).</p>
                 @endif
+
+                <a href="{{ route('reservations.show', $reservation->id) }}" class="btn btn-sm btn-outline-light mt-3">Voir le détail</a>
             </div>
         </div>
     @endforeach
 </div>
 
-<!-- <style>
+<style>
     .text-neon {
-        color: #2665a0; /* bleu néon futuriste */
+        color: #2665a0;
         text-shadow: 0 0 8px #00f0ff;
     }
     .card-header {
         background: linear-gradient(90deg, #0d47a1, #1976d2);
         border-bottom: 2px solid #00f0ff;
     }
-</style> -->
+</style>
 @endsection

@@ -4,6 +4,7 @@
 <div class="container py-4">
     <h2 class="text-primary fw-bold mb-4">🧾 Historique des commandes</h2>
 
+    {{-- Messages de succès / erreurs --}}
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
@@ -19,43 +20,52 @@
     @endif
 
     {{-- Formulaire de recherche avancée --}}
-    <form method="GET" action="{{ route('admin.orders.index') }}" class="row g-3 mb-4">
-        <div class="col-md-2">
-            <input type="text" name="id" class="form-control" placeholder="ID commande" value="{{ request('id') }}">
-        </div>
-        <div class="col-md-2">
-            <input type="text" name="qr" class="form-control" placeholder="QR code" value="{{ request('qr_code') }}">
-        </div>
-        <div class="col-md-2">
-            <input type="text" name="event" class="form-control" placeholder="Événement" value="{{ request('event') }}">
-        </div>
-        <div class="col-md-2">
-            <input type="date" name="date" class="form-control" value="{{ request('date') }}">
-        </div>
-        <div class="col-md-2">
-            <input type="text" name="location" class="form-control" placeholder="Lieu" value="{{ request('venue') }}">
-        </div>
-        <div class="col-md-2">
-            <input type="date" name="date_start" class="form-control" value="{{ request('date_start') }}">
-        </div>
-        <div class="col-md-2">
-            <input type="date" name="date_end" class="form-control" value="{{ request('date_end') }}">
-        </div>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <form method="GET" action="{{ route('admin.orders.index') }}" class="row g-3 align-items-end">
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Code</label>
+                    <input type="text" name="id" class="form-control" placeholder="ID commande" value="{{ request('id') }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">QR Code</label>
+                    <input type="text" name="qr_code" class="form-control" placeholder="QR code" value="{{ request('qr_code') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Nom de l'événement</label>
+                    <input type="text" name="event" class="form-control" placeholder="Événement" value="{{ request('event') }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Lieu</label>
+                    <input type="text" name="venue" class="form-control" placeholder="Lieu" value="{{ request('venue') }}">
+                </div>
 
-        <div class="col-md-2 d-flex gap-2">
-            <button type="submit" class="btn btn-primary">Rechercher</button>
-            <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary">Réinitialiser</a>
-            <div class="mb-3 text-end">
-                <a href="{{ route('admin.orders.export.pdf', request()->all()) }}" class="btn btn-sm btn-danger">Export PDF</a>
-            </div>
+                {{-- Recherche entre deux dates --}}
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Date début</label>
+                    <input type="date" name="date_start" class="form-control" value="{{ request('date_start') }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Date fin</label>
+                    <input type="date" name="date_end" class="form-control" value="{{ request('date_end') }}">
+                </div>
+
+                <div class="col-md-12 d-flex justify-content-between mt-3">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">🔍 Rechercher</button>
+                        <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary">♻️ Réinitialiser</a>
+                    </div>
+                    <a href="{{ route('admin.orders.export.pdf', request()->all()) }}" class="btn btn-danger">📄 Export PDF</a>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 
     {{-- Tableau des commandes --}}
-    <div class="card">
+    <div class="card shadow-sm">
         <div class="card-body table-responsive">
-            <table class="table table-dark table-striped align-middle">
-                <thead>
+            <table class="table table-hover align-middle">
+                <thead class="table-primary">
                     <tr>
                         <th>#</th>
                         <th>Utilisateur</th>
@@ -79,11 +89,7 @@
                                 </span>
                             </td>
                             <td>
-                                @if($order->tickets->count())
-                                    {{ $order->tickets->first()->event->title }}
-                                @else
-                                    -
-                                @endif
+                                {{ $order->tickets->count() ? $order->tickets->first()->event->title : '-' }}
                             </td>
                             <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                             <td>{{ $order->payment->status ?? '-' }}</td>
@@ -93,7 +99,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center">Aucune commande trouvée.</td>
+                            <td colspan="8" class="text-center text-muted">Aucune commande trouvée.</td>
                         </tr>
                     @endforelse
                 </tbody>

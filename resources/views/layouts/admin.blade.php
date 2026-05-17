@@ -10,7 +10,12 @@
 
     <!-- CSS global -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+    {{--  Ajout pour injecter les styles spécifiques des vues --}}
+    @yield('styles')
 </head>
+
+
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow">
     <div class="container-fluid">
@@ -25,7 +30,8 @@
                 <li><a class="nav-link" href="{{ route('admin.dashboard') }}">📊 Tableau de bord</a></li>
                 <li><a class="nav-link" href="{{ route('admin.events.index') }}">🎫 Événements</a></li>
                 <li><a class="nav-link" href="{{ route('admin.organizers.index') }}">📣 Organisateurs</a></li>
-                <li><a class="nav-link" href="{{ route('admin.venues.index') }}">🏟️ Salles</a></li>
+                <li><a class="nav-link" href="{{ route('admin.venues.index') }}">📍 Lieu</a></li>
+                <li><a class="nav-link" href="{{ route('admin.rooms.index') }}">🏟️ Salles</a></li>
                 <li><a class="nav-link" href="{{ route('admin.ticket-types.index') }}">🎟️ Billets</a></li>
                 <li><a class="nav-link" href="{{ route('admin.orders.index') }}">🛒 Commandes</a></li>
                 <li><a class="nav-link" href="{{ route('admin.reservations.index') }}">🪑 Réservations</a></li>

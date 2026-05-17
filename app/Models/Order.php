@@ -16,6 +16,7 @@ class Order extends Model
     public function user(){ return $this->belongsTo(User::class); }
     public function tickets(){ return $this->hasMany(Ticket::class); }
     public function payment(){ return $this->hasOne(Payment::class); }
+    public function reservation() { return $this->hasOne(Reservation::class); }
 }
 
 

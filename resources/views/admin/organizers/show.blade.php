@@ -9,14 +9,15 @@
     <div class="card-body">
         <div class="row mb-3">
             <div class="col-md-4 text-center">
-                @if($organizer->logo)
-                    <img src="{{ asset('storage/' . $organizer->logo) }}" 
-                         alt="Logo de {{ $organizer->name }}" 
-                         class="img-fluid rounded shadow" 
-                         style="max-height: 150px;">
+                                @if($organizer->logo)
+                    <img src="{{ Storage::url($organizer->logo) }}" 
+                        alt="Logo de {{ $organizer->name }}" 
+                        class="img-fluid rounded shadow" 
+                        style="max-height: 150px;">
                 @else
                     <span class="text-muted">Aucun logo disponible</span>
                 @endif
+
             </div>
             <div class="col-md-8">
                 <p><strong>Nom :</strong> {{ $organizer->name }}</p>

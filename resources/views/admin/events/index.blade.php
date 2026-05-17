@@ -19,7 +19,7 @@
                     <tr>
                         <th>#</th>
                         <th>Titre</th>
-                        <th>Catégorie</th>
+                        <!-- <th>Catégorie</th> -->
                         <th>Type</th>
                         <th>Organisateur</th>
                         <th>Lieu</th>
@@ -36,7 +36,7 @@
                         <tr>
                             <td>{{ $event->id }}</td>
                             <td>{{ $event->title }}</td>
-                            <td>{{ ucfirst($event->category) }}</td>
+                            <!-- <td>{{ ucfirst($event->category) }}</td> -->
                             <td>{{ $event->eventType?->label ?? '—' }}</td>
                             <td>{{ $event->organizer?->name ?? '—' }}</td>
                             <td>{{ $event->venue?->name ?? '—' }}</td>
